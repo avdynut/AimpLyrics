@@ -9,6 +9,8 @@ namespace AimpLyrics
     [AimpPlugin("AimpLyrics", "Andrey Arekhva", "0.0.1", AimpPluginType = AimpPluginType.Addons, Description = "Lyrics Plugin")]
     public class AimpLyricsPlugin : AimpPlugin
     {
+        private LyricsWIndow lyricsWindow;
+
         public override void Initialize()
         {
             var logFilePath = Path.Combine(Assembly.GetExecutingAssembly().GetName().Name, "log.txt");
@@ -21,6 +23,13 @@ namespace AimpLyrics
                 menuItem.Name = "AimpLyrics";
                 menuItem.Id = "demo_form";
                 menuItem.Style = AimpMenuItemStyle.Normal;
+
+                menuItem.OnExecute += (sender, args) =>
+                {
+                    Debug.WriteLine("Open Lyrics Window");
+                    lyricsWindow = new LyricsWIndow();
+                    lyricsWindow.Show();
+                };
 
                 menuItem.OnShow += (sender, args) =>
                 {
@@ -37,6 +46,7 @@ namespace AimpLyrics
         public override void Dispose()
         {
             Trace.WriteLine("Disposing plugin");
+            lyricsWindow.Close();
             Trace.Close();
         }
     }
