@@ -9,7 +9,7 @@ namespace AimpLyrics
     [AimpPlugin("AimpLyrics", "Andrey Arekhva", "0.0.1", AimpPluginType = AimpPluginType.Addons, Description = "Lyrics Plugin")]
     public class AimpLyricsPlugin : AimpPlugin
     {
-        private LyricsWIndow lyricsWindow;
+        private LyricsWindow lyricsWindow;
 
         public override void Initialize()
         {
@@ -27,7 +27,7 @@ namespace AimpLyrics
                 menuItem.OnExecute += (sender, args) =>
                 {
                     Debug.WriteLine("Open Lyrics Window");
-                    lyricsWindow = new LyricsWIndow();
+                    lyricsWindow = new LyricsWindow(Player);
                     lyricsWindow.Show();
                 };
 

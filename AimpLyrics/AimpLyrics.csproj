@@ -70,8 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AimpLyricsPlugin.cs" />
-    <Compile Include="LyricsWIndow.xaml.cs">
-      <DependentUpon>LyricsWIndow.xaml</DependentUpon>
+    <Compile Include="LyricsWindow.xaml.cs">
+      <DependentUpon>LyricsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -82,7 +82,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="LyricsWIndow.xaml">
+    <Page Include="LyricsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,8 +1,10 @@
-﻿<Window x:Class="AimpLyrics.LyricsWIndow"
+﻿<Window x:Class="AimpLyrics.LyricsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Lyrics">
-    <Grid>
-        <TextBox AcceptsReturn="True"/>
-    </Grid>
+    <StackPanel>
+        <TextBlock Name="Artist"/>
+        <TextBlock Name="Title"/>
+        <TextBox Name="Lyrics" AcceptsReturn="True"/>
+    </StackPanel>
 </Window>
