@@ -1,5 +1,6 @@
 ﻿using AIMP.SDK.Player;
 using System;
+using System.Diagnostics;
 using System.Windows;
 
 namespace AimpLyrics
@@ -22,6 +23,7 @@ namespace AimpLyrics
 
         private void OnPlayerTrackChanged(object sender, EventArgs e)
         {
+            Trace.WriteLine("Track Changed");
             UpdateSongInfo();
         }
 

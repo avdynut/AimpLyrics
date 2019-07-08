@@ -13,39 +13,39 @@ namespace AimpLyrics
 
         public override void Initialize()
         {
+            SetUpLogger();
+            lyricsWindow = new LyricsWindow(Player);
+            AddMenuItem();
+        }
+
+        private void SetUpLogger()
+        {
             var logFilePath = Path.Combine(Assembly.GetExecutingAssembly().GetName().Name, "log.txt");
             Trace.Listeners.Add(new TextWriterTraceListener(logFilePath));
             Trace.AutoFlush = true;
-            Trace.WriteLine("Initializing plugin");
+        }
 
+        private void AddMenuItem()
+        {
             if (Player.MenuManager.CreateMenuItem(out IAimpMenuItem menuItem) == AimpActionResult.OK)
             {
-                menuItem.Name = "AimpLyrics";
-                menuItem.Id = "demo_form";
-                menuItem.Style = AimpMenuItemStyle.Normal;
+                menuItem.Id = menuItem.Name = "Lyrics";
+                menuItem.Style = AimpMenuItemStyle.CheckBox;
 
                 menuItem.OnExecute += (sender, args) =>
                 {
-                    Debug.WriteLine("Open Lyrics Window");
-                    lyricsWindow = new LyricsWindow(Player);
-                    lyricsWindow.Show();
+                    if (lyricsWindow.IsVisible)
+                        lyricsWindow.Hide();
+                    else
+                        lyricsWindow.Show();
                 };
 
-                menuItem.OnShow += (sender, args) =>
-                {
-                    var item = sender as IAimpMenuItem;
-                    Debug.WriteLine($"OnShow Menu Item: {item.Id}");
-                };
-
-                Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
+                Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_PLAYER_MAIN_FUNCTIONS, menuItem);
             }
-
-            Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
         }
 
         public override void Dispose()
         {
-            Trace.WriteLine("Disposing plugin");
             lyricsWindow.Close();
             Trace.Close();
         }
