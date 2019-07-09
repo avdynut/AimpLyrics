@@ -9,12 +9,17 @@ namespace AimpLyrics
     [AimpPlugin("AimpLyrics", "Andrey Arekhva", "0.0.1", AimpPluginType = AimpPluginType.Addons, Description = "Lyrics Plugin")]
     public class AimpLyricsPlugin : AimpPlugin
     {
-        private LyricsWindow lyricsWindow;
+        private LyricsWindow _lyricsWindow;
+        private AimpMessageHook _hook;
 
         public override void Initialize()
         {
             SetUpLogger();
-            lyricsWindow = new LyricsWindow(Player);
+
+            _hook = new AimpMessageHook();
+            Player.ServiceMessageDispatcher.Hook(_hook);
+            _lyricsWindow = new LyricsWindow(Player, _hook);
+
             AddMenuItem();
         }
 
@@ -34,19 +39,20 @@ namespace AimpLyrics
 
                 menuItem.OnExecute += (sender, args) =>
                 {
-                    if (lyricsWindow.IsVisible)
-                        lyricsWindow.Hide();
+                    if (_lyricsWindow.IsVisible)
+                        _lyricsWindow.Hide();
                     else
-                        lyricsWindow.Show();
+                        _lyricsWindow.Show();
                 };
 
-                Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_PLAYER_MAIN_FUNCTIONS, menuItem);
+                Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
             }
         }
 
         public override void Dispose()
         {
-            lyricsWindow.Close();
+            _lyricsWindow?.Close();
+            Player.ServiceMessageDispatcher.Unhook(_hook);
             Trace.Close();
         }
     }

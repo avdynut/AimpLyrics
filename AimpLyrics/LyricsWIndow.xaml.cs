@@ -1,6 +1,4 @@
 ﻿using AIMP.SDK.Player;
-using System;
-using System.Diagnostics;
 using System.Windows;
 
 namespace AimpLyrics
@@ -12,18 +10,13 @@ namespace AimpLyrics
     {
         private readonly IAimpPlayer _player;
 
-        public LyricsWindow(IAimpPlayer player)
+        public LyricsWindow(IAimpPlayer player, AimpMessageHook hook)
         {
             InitializeComponent();
 
             _player = player;
-            _player.TrackChanged += OnPlayerTrackChanged;
-            UpdateSongInfo();
-        }
+            hook.TrackChanged += () => UpdateSongInfo();
 
-        private void OnPlayerTrackChanged(object sender, EventArgs e)
-        {
-            Trace.WriteLine("Track Changed");
             UpdateSongInfo();
         }
 
