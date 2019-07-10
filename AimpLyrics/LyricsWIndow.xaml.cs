@@ -1,4 +1,5 @@
 ﻿using AIMP.SDK.Player;
+using System.ComponentModel;
 using System.Windows;
 
 namespace AimpLyrics
@@ -26,6 +27,12 @@ namespace AimpLyrics
             Artist.Text = fileInfo.Artist;
             Title.Text = fileInfo.Title;
             Lyrics.Text = fileInfo.Lyrics;
+        }
+
+        private void OnClosing(object sender, CancelEventArgs e)
+        {
+            Hide();
+            e.Cancel = true;
         }
     }
 }
