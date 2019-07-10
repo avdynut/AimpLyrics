@@ -34,17 +34,14 @@ namespace AimpLyrics
         {
             if (Player.MenuManager.CreateMenuItem(out IAimpMenuItem menuItem) == AimpActionResult.OK)
             {
-                menuItem.Id = menuItem.Name = "Lyrics";
-                menuItem.Style = AimpMenuItemStyle.CheckBox;
+                var action = Player.ActionManager.CreateAction();
+                action.Id = "aimp.lyrics.open.window";
+                action.Name = "Open Lyrics";
+                action.GroupName = "Lyrics";
+                action.OnExecute += (sender, args) => _lyricsWindow.Show();
 
-                menuItem.OnExecute += (sender, args) =>
-                {
-                    if (_lyricsWindow.IsVisible)
-                        _lyricsWindow.Hide();
-                    else
-                        _lyricsWindow.Show();
-                };
-
+                menuItem.Action = action;
+                Player.ActionManager.Register(action);
                 Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
             }
         }
