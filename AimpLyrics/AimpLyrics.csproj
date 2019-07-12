@@ -48,6 +48,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AIMP.SDK, Version=4.50.2048.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AimpSDK.4.50.2048\lib\net462\AIMP.SDK.dll</HintPath>
@@ -89,4 +92,7 @@
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName)==Release call CopyPlugin.bat</PostBuildEvent>
+  </PropertyGroup>
 </Project>
