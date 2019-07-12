@@ -1,5 +1,7 @@
-﻿using AIMP.SDK.Player;
+﻿using AIMP.SDK.Lyrics;
+using AIMP.SDK.Player;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 
 namespace AimpLyrics
@@ -16,17 +18,25 @@ namespace AimpLyrics
             InitializeComponent();
 
             _player = player;
-            hook.TrackChanged += () => UpdateSongInfo();
+            _player.ServiceLyrics.LyricsReceive += OnLyricsReceived;
 
-            UpdateSongInfo();
+            hook.TrackChanged += () => GetCurrentLyrics();
+            GetCurrentLyrics();
         }
 
-        private void UpdateSongInfo()
+        private void GetCurrentLyrics()
+        {
+            _player.ServiceLyrics.Get(_player.CurrentFileInfo, 0, null, out _);
+        }
+
+        private void OnLyricsReceived(IAimpLyrics lyrics, object userData)
         {
             var fileInfo = _player.CurrentFileInfo;
             Artist.Text = fileInfo.Artist;
             Title.Text = fileInfo.Title;
-            Lyrics.Text = fileInfo.Lyrics;
+            Lyrics.Text = lyrics.Text.Length > 0 ? lyrics.Text : fileInfo.Lyrics;
+
+            Trace.WriteLine($"Lyrics received with text length: {lyrics.Text.Length}, from tag: {fileInfo.Lyrics.Length}");
         }
 
         private void OnClosing(object sender, CancelEventArgs e)
