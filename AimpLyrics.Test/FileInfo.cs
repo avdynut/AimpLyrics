@@ -10,7 +10,7 @@ namespace AimpLyrics.Test
         public string AlbumArtist { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double Gain { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double Peak { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Artist { get; set; } = "Artist";
+        public string Artist { get; set; } = "Elevation Worship";
         public int BitRate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int BitDepth { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int BPM { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -27,11 +27,11 @@ namespace AimpLyrics.Test
         public string FileName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public long FileSize { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Genre { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Lyrics { get; set; } = "Lyrics";
+        public string Lyrics { get; set; } = "";
         public double Mark { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Publisher { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int SampleRate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Title { get; set; } = "Title";
+        public string Title { get; set; } = "Do It Again";
         public double TrackGain { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string TrackNumber { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double TrackPeak { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

@@ -3,10 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Lyrics"
         WindowStyle="ToolWindow"
-        Closing="OnClosing">
-    <DockPanel>        
+        Closing="OnClosing"
+        SizeToContent="Width" MinWidth="300">
+    <DockPanel>
         <TextBlock Name="Artist" DockPanel.Dock="Top"/>
         <TextBlock Name="Title" DockPanel.Dock="Top"/>
         <TextBox Name="Lyrics" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <WebBrowser Name="Browser" LoadCompleted="OnBrowserLoadCompleted" Visibility="Collapsed"/>
     </DockPanel>
 </Window>

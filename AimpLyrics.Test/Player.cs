@@ -76,7 +76,8 @@ namespace AimpLyrics.Test
 
         public IAimpServiceFileTagEditor ServiceFileTagEditor => throw new NotImplementedException();
 
-        public IAimpServiceLyrics ServiceLyrics => throw new NotImplementedException();
+        private readonly IAimpServiceLyrics serviceLyrics = new ServiceLyrics();
+        public IAimpServiceLyrics ServiceLyrics => serviceLyrics;
 
         public event EventHandler<StateChangedEventArgs> StateChanged;
         public event EventHandler LanguageChanged;
