@@ -26,17 +26,12 @@ namespace AimpLyrics
             _player = player;
             _player.ServiceLyrics.LyricsReceive += OnLyricsReceived;
 
-            hook.TrackChanged += () =>
-            {
-                ClearLyrics();
-                UpdateSongInfo();
-            };
-
-            UpdateSongInfo();
+            hook.FileInfoReceived += UpdateSongInfo;
         }
 
         private void UpdateSongInfo()
         {
+            ClearLyrics();
             Artist.Text = _player.CurrentFileInfo.Artist;
             Title.Text = _player.CurrentFileInfo.Title;
             _player.ServiceLyrics.Get(_player.CurrentFileInfo, 0, null, out _);
