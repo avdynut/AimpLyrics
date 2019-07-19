@@ -9,6 +9,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
@@ -22,9 +23,13 @@
             <TextBox Grid.Row="0" Name="Artist" ToolTip="Artist"/>
             <TextBox Grid.Row="1" Name="Title" ToolTip="Title"/>
             <Button Grid.Column="1" Grid.RowSpan="2" Content="Search" ToolTip="Search lyrics in Google"
-                    Click="SearchLyricsInGoogle" IsDefault="True"/>
+                    Click="OnSearchButtonClick" IsDefault="True"/>
         </Grid>
-        <TextBox Grid.Row="1" Name="Lyrics" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <TextBox Grid.Row="1" Name="Lyrics" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <TextBlock Text="Lyrics Source: "/>
+            <TextBlock Name="LyricsSource"/>
+        </StackPanel>
         <WebBrowser Name="Browser" LoadCompleted="OnBrowserLoadCompleted" Visibility="Collapsed"/>
     </Grid>
 </Window>
