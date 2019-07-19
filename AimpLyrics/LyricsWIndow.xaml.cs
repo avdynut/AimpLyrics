@@ -19,6 +19,10 @@ namespace AimpLyrics
         {
             InitializeComponent();
 
+#if DEBUG
+            BrowserPanel.Visibility = Visibility.Visible;
+#endif
+
             _player = player;
             _player.ServiceLyrics.LyricsReceive += OnLyricsReceived;
 

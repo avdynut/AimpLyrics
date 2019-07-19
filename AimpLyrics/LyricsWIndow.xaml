@@ -10,6 +10,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
@@ -30,6 +31,13 @@
             <TextBlock Text="Lyrics Source: "/>
             <TextBlock Name="LyricsSource"/>
         </StackPanel>
-        <WebBrowser Name="Browser" LoadCompleted="OnBrowserLoadCompleted" Visibility="Collapsed"/>
+        <StackPanel Grid.Row="3" Name="BrowserPanel" Visibility="Collapsed">
+            <StackPanel.Resources>
+                <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+            </StackPanel.Resources>
+            <CheckBox Name="ShowBrowser" Content="Show Browser"/>
+            <WebBrowser Name="Browser" LoadCompleted="OnBrowserLoadCompleted"
+                        Visibility="{Binding ElementName=ShowBrowser, Path=IsChecked, Converter={StaticResource BoolToVisibility}}"/>
+        </StackPanel>
     </Grid>
 </Window>
