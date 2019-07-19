@@ -40,10 +40,13 @@ namespace AimpLyrics
             Trace.WriteLine($"Lyrics received with text length: {lyrics.Text.Length}, from tag: {fileInfo.Lyrics.Length}");
 
             if (string.IsNullOrEmpty(Lyrics.Text))
-            {
-                string url = $"https://www.google.com/search?q={fileInfo.Artist}+{fileInfo.Title}";
-                Browser.Navigate(url);
-            }
+                SearchLyricsInGoogle(this, null);
+        }
+
+        private void SearchLyricsInGoogle(object sender, RoutedEventArgs e)
+        {
+            string url = $"https://www.google.com/search?q={Artist.Text}+{Title.Text}";
+            Browser.Navigate(url);
         }
 
         private void OnBrowserLoadCompleted(object sender, NavigationEventArgs e)

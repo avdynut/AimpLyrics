@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace AimpLyrics
 {
-    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "0.1.0", AimpPluginType = AimpPluginType.Addons, Description = "Lyrics Plugin")]
+    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "0.2.0", AimpPluginType = AimpPluginType.Addons, Description = "Lyrics Plugin")]
     public class AimpLyricsPlugin : AimpPlugin
     {
         private LyricsWindow _lyricsWindow;
