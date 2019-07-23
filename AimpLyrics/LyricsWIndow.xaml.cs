@@ -3,6 +3,7 @@ using AIMP.SDK.Player;
 using mshtml;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Web;
 using System.Windows;
 using System.Windows.Navigation;
 
@@ -19,14 +20,15 @@ namespace AimpLyrics
         {
             InitializeComponent();
 
-#if DEBUG
-            BrowserPanel.Visibility = Visibility.Visible;
-#endif
-
             _player = player;
             _player.ServiceLyrics.LyricsReceive += OnLyricsReceived;
 
             hook.FileInfoReceived += UpdateSongInfo;
+
+#if DEBUG
+            BrowserPanel.Visibility = Visibility.Visible;
+            UpdateSongInfo();
+#endif
         }
 
         private void UpdateSongInfo()
@@ -58,32 +60,52 @@ namespace AimpLyrics
             else
                 SearchLyricsInGoogle();
 
-            Trace.WriteLine($"Lyrics received with text length: {Lyrics.Text.Length}, from source: {LyricsSource.Text}");
+            var text = Lyrics.Text;
+            if (text.Length > 0)
+            {
+                Trace.WriteLine($"Lyrics received with text length: {text.Length}, from source: {LyricsSource.Text}");
+                //_player.CurrentFileInfo.Lyrics = text;
+                // todo: save lyrics to tag
+            }
+            else
+                Trace.WriteLine("Lyrics not found");
         }
 
         private void SearchLyricsInGoogle()
         {
-            string url = $"https://www.google.com/search?q={Artist.Text}+{Title.Text}";
-            Browser.Navigate(url);
-            Trace.WriteLine($"Seaching lyrics by URL: {url}");
+            string searchTerm = HttpUtility.UrlEncode($"{Artist.Text} {Title.Text} lyrics");
+            Browser.Navigate("https://www.google.com/search?q=" + searchTerm);
+            Trace.WriteLine($"Seaching lyrics by term: {searchTerm}");
         }
 
         private void OnBrowserLoadCompleted(object sender, NavigationEventArgs e)
         {
             var doc = (HTMLDocument)Browser.Document;
-            var nodes = doc.getElementsByTagName("g-expandable-content");
+            var divs = doc.getElementsByTagName("div");
+
+            // find Expand button
+            foreach (var div in divs)
+            {
+                var element = (IHTMLElement)div;
+                if (element.getAttribute("role") == "button" && element.getAttribute("aria-expanded") == "false")
+                {
+                    element.click();
+                    break;
+                }
+            }
 
             bool found = false;
-            foreach (var node in nodes)
+            foreach (var div in divs)
             {
-                var element = (IHTMLElement)node;
-                if (element.getAttribute("data-lyricid") is string && element.getAttribute("aria-hidden") == "true")
+                var element = (IHTMLElement)div;
+                if (element.className == "Oh5wg")
                 {
                     Lyrics.Text = element.innerText;
                     found = true;
                     break;
                 }
             }
+
             LyricsSource.Text = found ? "Google" : "None";
         }
 
