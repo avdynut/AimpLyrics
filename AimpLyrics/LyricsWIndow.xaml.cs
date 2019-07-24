@@ -1,8 +1,10 @@
-﻿using AIMP.SDK.Lyrics;
+﻿using AIMP.SDK;
+using AIMP.SDK.Lyrics;
 using AIMP.SDK.Player;
 using mshtml;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Web;
 using System.Windows;
 using System.Windows.Navigation;
@@ -45,30 +47,21 @@ namespace AimpLyrics
             LyricsSource.Text = "";
         }
 
+        private void SetLyrics(string lyrics, string source)
+        {
+            Lyrics.Text = lyrics;
+            LyricsSource.Text = source;
+            Trace.WriteLine($"Lyrics received with text length: {lyrics.Length}, from source: {source}");
+        }
+
         private void OnLyricsReceived(IAimpLyrics lyrics, object userData)
         {
             if (!string.IsNullOrEmpty(lyrics.Text?.Trim()))
-            {
-                Lyrics.Text = lyrics.Text;
-                LyricsSource.Text = "AIMP Lyrics Service";
-            }
+                SetLyrics(lyrics.Text, "AIMP Lyrics Service");
             else if (!string.IsNullOrEmpty(_player.CurrentFileInfo.Lyrics?.Trim()))
-            {
-                Lyrics.Text = _player.CurrentFileInfo.Lyrics;
-                LyricsSource.Text = "Lyrics Tag";
-            }
+                SetLyrics(_player.CurrentFileInfo.Lyrics, "Lyrics Tag");
             else
                 SearchLyricsInGoogle();
-
-            var text = Lyrics.Text;
-            if (text.Length > 0)
-            {
-                Trace.WriteLine($"Lyrics received with text length: {text.Length}, from source: {LyricsSource.Text}");
-                //_player.CurrentFileInfo.Lyrics = text;
-                // todo: save lyrics to tag
-            }
-            else
-                Trace.WriteLine("Lyrics not found");
         }
 
         private void SearchLyricsInGoogle()
@@ -100,13 +93,39 @@ namespace AimpLyrics
                 var element = (IHTMLElement)div;
                 if (element.className == "Oh5wg")
                 {
-                    Lyrics.Text = element.innerText;
+                    SetLyrics(element.innerText, "Google");
                     found = true;
                     break;
                 }
             }
 
-            LyricsSource.Text = found ? "Google" : "None";
+            if (found)
+                SaveLyricsToFile();
+            else
+            {
+                LyricsSource.Text = "None";
+                Trace.WriteLine("Lyrics not found");
+            }
+        }
+
+        private void SaveLyricsToFile()
+        {
+            string path = Path.ChangeExtension(_player.CurrentFileInfo.FileName, "txt");
+            File.WriteAllText(path, Lyrics.Text);
+        }
+
+        // doesn't save for some reason
+        private void SaveLyricsToTag()
+        {
+            if (_player.ServiceFileTagEditor.EditFile(_player.CurrentFileInfo.FileName, out var tagEditor) == AimpActionResult.OK)
+            {
+                if (tagEditor.GetMixedInfo(out var fileInfo) == AimpActionResult.OK)
+                {
+                    fileInfo.Lyrics = Lyrics.Text;
+                    if (tagEditor.Save() == AimpActionResult.OK)
+                        Trace.WriteLine("Lyrics have been saved to tag");
+                }
+            }
         }
 
         private void OnSearchButtonClick(object sender, RoutedEventArgs e)

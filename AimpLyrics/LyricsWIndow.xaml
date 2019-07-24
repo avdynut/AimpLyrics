@@ -11,6 +11,7 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
@@ -31,7 +32,12 @@
             <TextBlock Text="Lyrics Source: "/>
             <TextBlock Name="LyricsSource"/>
         </StackPanel>
-        <StackPanel Grid.Row="3" Name="BrowserPanel" Visibility="Collapsed">
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <!--<Button Content="Save To Tag"/>
+            <Button Content="Save To File"/>-->
+            <!--<CheckBox Content="Save To Tag" IsChecked="True"/>-->
+        </StackPanel>
+        <StackPanel Grid.Row="4" Name="BrowserPanel" Visibility="Collapsed">
             <StackPanel.Resources>
                 <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
             </StackPanel.Resources>

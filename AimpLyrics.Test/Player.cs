@@ -74,7 +74,7 @@ namespace AimpLyrics.Test
 
         public IAimpServiceFileInfoFormatter ServiceFileInfoFormatter => throw new NotImplementedException();
 
-        public IAimpServiceFileTagEditor ServiceFileTagEditor => throw new NotImplementedException();
+        public IAimpServiceFileTagEditor ServiceFileTagEditor => new ServiceFileTagEditor();
 
         private readonly IAimpServiceLyrics serviceLyrics = new ServiceLyrics();
         public IAimpServiceLyrics ServiceLyrics => serviceLyrics;

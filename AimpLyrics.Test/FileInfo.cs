@@ -24,7 +24,7 @@ namespace AimpLyrics.Test
         public string DiskNumber { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string DiskTotal { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double Duration { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string FileName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string FileName { get; set; }
         public long FileSize { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Genre { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Lyrics { get; set; } = "";
