@@ -21,14 +21,19 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Row="0" Name="Artist" ToolTip="Artist"/>
-            <TextBox Grid.Row="1" Name="Title" ToolTip="Title"/>
+            <TextBox Grid.Row="0" Name="Artist" ToolTip="Artist" Margin="2"/>
+            <TextBox Grid.Row="1" Name="Title" ToolTip="Title" Margin="2"/>
             <Button Grid.Column="1" Grid.RowSpan="2" Content="Search" ToolTip="Search lyrics in Google"
-                    Click="OnSearchButtonClick" IsDefault="True"/>
+                    Click="OnSearchButtonClick" IsDefault="True"  Margin="2" Padding="2"/>
         </Grid>
-        <TextBox Grid.Row="1" Name="Lyrics" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+        <TextBox Grid.Row="1" Name="Lyrics" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"
+                 FontSize="{Binding ElementName=FontSize, Path=Text}" Margin="2"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Button Content="Save" Click="SaveLyrics"/>
+            <Button Content="Save" Click="SaveLyrics" Margin="2" Padding="2"/>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Font Size: "/>
+                <TextBox Name="FontSize" Text="14" VerticalAlignment="Center" MinWidth="20"/>
+            </StackPanel>
             <!--<Button Content="Save To File"/>
             <CheckBox Content="Save To Tag" IsChecked="True"/>-->
         </StackPanel>
