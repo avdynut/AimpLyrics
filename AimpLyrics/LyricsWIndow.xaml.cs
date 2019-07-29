@@ -1,10 +1,11 @@
 ﻿using AIMP.SDK;
-using AIMP.SDK.Lyrics;
+using AIMP.SDK.FileManager;
 using AIMP.SDK.Player;
 using mshtml;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Windows;
 using System.Windows.Navigation;
@@ -18,13 +19,15 @@ namespace AimpLyrics
     {
         private readonly IAimpPlayer _player;
 
+        private IAimpFileInfo _fileInfo;
+        private string _filePath;
+        private LyricsSource _source;
+
         public LyricsWindow(IAimpPlayer player, AimpMessageHook hook)
         {
             InitializeComponent();
 
             _player = player;
-            _player.ServiceLyrics.LyricsReceive += OnLyricsReceived;
-
             hook.FileInfoReceived += UpdateSongInfo;
 
 #if DEBUG
@@ -36,32 +39,40 @@ namespace AimpLyrics
         private void UpdateSongInfo()
         {
             ClearLyrics();
-            Artist.Text = _player.CurrentFileInfo.Artist;
-            Title.Text = _player.CurrentFileInfo.Title;
-            _player.ServiceLyrics.Get(_player.CurrentFileInfo, 0, null, out _);
+            _fileInfo = _player.CurrentFileInfo;
+            Artist.Text = _fileInfo.Artist;
+            Title.Text = _fileInfo.Title;
+
+            if (!GetLyricsFromFile() && !string.IsNullOrEmpty(_fileInfo.Lyrics))
+            {
+                Lyrics.Text = _fileInfo.Lyrics;
+                _source = LyricsSource.Tag;
+                Trace.WriteLine("Lyrics received from lyrics tag");
+            }
+            else
+                SearchLyricsInGoogle();
         }
 
         private void ClearLyrics()
         {
             Lyrics.Text = "";
-            LyricsSource.Text = "";
+            _source = LyricsSource.None;
         }
 
-        private void SetLyrics(string lyrics, string source)
+        private bool GetLyricsFromFile()
         {
-            Lyrics.Text = lyrics;
-            LyricsSource.Text = source;
-            Trace.WriteLine($"Lyrics received with text length: {lyrics.Length}, from source: {source}");
-        }
+            string directory = Path.GetDirectoryName(_fileInfo.FileName);
+            string filePattern = Path.GetFileNameWithoutExtension(_fileInfo.FileName) + ".*";
+            _filePath = Directory.EnumerateFiles(directory, filePattern)
+                .FirstOrDefault(x => x.ToLower().EndsWith(".txt") || x.ToLower().EndsWith(".lrc") || x.ToLower().EndsWith(".srt"));
 
-        private void OnLyricsReceived(IAimpLyrics lyrics, object userData)
-        {
-            if (!string.IsNullOrEmpty(lyrics.Text?.Trim()))
-                SetLyrics(lyrics.Text, "AIMP Lyrics Service");
-            else if (!string.IsNullOrEmpty(_player.CurrentFileInfo.Lyrics?.Trim()))
-                SetLyrics(_player.CurrentFileInfo.Lyrics, "Lyrics Tag");
-            else
-                SearchLyricsInGoogle();
+            if (_filePath == null)
+                return false;
+
+            Lyrics.Text = File.ReadAllText(_filePath);
+            _source = LyricsSource.File;
+            Trace.WriteLine($"Lyrics received from {_filePath}");
+            return true;
         }
 
         private void SearchLyricsInGoogle()
@@ -87,37 +98,29 @@ namespace AimpLyrics
                 }
             }
 
-            bool found = false;
             foreach (var div in divs)
             {
                 var element = (IHTMLElement)div;
                 if (element.className == "Oh5wg")
                 {
-                    SetLyrics(element.innerText, "Google");
-                    found = true;
+                    Lyrics.Text = element.innerText;
+                    _source = LyricsSource.Google;
+                    Trace.WriteLine("Lyrics received from Google");
                     break;
                 }
-            }
-
-            if (found)
-                SaveLyricsToFile();
-            else
-            {
-                LyricsSource.Text = "None";
-                Trace.WriteLine("Lyrics not found");
             }
         }
 
         private void SaveLyricsToFile()
         {
-            string path = Path.ChangeExtension(_player.CurrentFileInfo.FileName, "txt");
-            File.WriteAllText(path, Lyrics.Text);
+            File.WriteAllText(_filePath, Lyrics.Text);
+            Trace.WriteLine($"Lyrics have been saved to {_filePath}");
         }
 
         // doesn't save for some reason
         private void SaveLyricsToTag()
         {
-            if (_player.ServiceFileTagEditor.EditFile(_player.CurrentFileInfo.FileName, out var tagEditor) == AimpActionResult.OK)
+            if (_player.ServiceFileTagEditor.EditFile(_fileInfo.FileName, out var tagEditor) == AimpActionResult.OK)
             {
                 if (tagEditor.GetMixedInfo(out var fileInfo) == AimpActionResult.OK)
                 {
@@ -125,6 +128,26 @@ namespace AimpLyrics
                     if (tagEditor.Save() == AimpActionResult.OK)
                         Trace.WriteLine("Lyrics have been saved to tag");
                 }
+            }
+        }
+
+        private void SaveLyrics(object sender, RoutedEventArgs e)
+        {
+            switch (_source)
+            {
+                case LyricsSource.None:
+                    return;
+                case LyricsSource.Tag:
+                    SaveLyricsToTag();
+                    break;
+                case LyricsSource.File:
+                    SaveLyricsToFile();
+                    break;
+                case LyricsSource.Google:
+                    _filePath = Path.ChangeExtension(_fileInfo.FileName, "txt");
+                    _source = LyricsSource.File;
+                    SaveLyricsToFile();
+                    break;
             }
         }
 

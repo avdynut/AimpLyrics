@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="AimpLyricsPlugin.cs" />
     <Compile Include="AimpMessageHook.cs" />
+    <Compile Include="LyricsSource.cs" />
     <Compile Include="LyricsWindow.xaml.cs">
       <DependentUpon>LyricsWindow.xaml</DependentUpon>
     </Compile>

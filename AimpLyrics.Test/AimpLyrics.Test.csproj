@@ -54,9 +54,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Lyrics.cs" />
     <Compile Include="ServiceFileTagEditor.cs" />
-    <Compile Include="ServiceLyrics.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileInfo.cs" />
