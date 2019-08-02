@@ -87,23 +87,16 @@ namespace AimpLyrics
             var doc = (HTMLDocument)Browser.Document;
             var divs = doc.getElementsByTagName("div");
 
-            // find Expand button
-            foreach (var div in divs)
-            {
-                var element = (IHTMLElement)div;
-                if (element.getAttribute("role") == "button" && element.getAttribute("aria-expanded") == "false")
-                {
-                    element.click();
-                    break;
-                }
-            }
-
             foreach (var div in divs)
             {
                 var element = (IHTMLElement)div;
                 if (element.className == "Oh5wg")
                 {
-                    Lyrics.Text = element.innerText;
+                    var children = (element.children as IHTMLElementCollection).Cast<IHTMLElement>().ToArray();
+                    Lyrics.Text = children[0].innerText;
+                    Lyrics.Text = Lyrics.Text.Remove(Lyrics.Text.LastIndexOf("\r\n\r\n") + 1);
+                    Lyrics.Text += children[1].innerText;
+
                     _source = LyricsSource.Google;
                     Trace.WriteLine("Lyrics received from Google");
                     break;
