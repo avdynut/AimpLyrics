@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace AimpLyrics
 {
-    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "0.5.0", AimpPluginType = AimpPluginType.Addons, Description = "Lyrics Plugin")]
+    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.0", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
     public class AimpLyricsPlugin : AimpPlugin
     {
         private LyricsWindow _lyricsWindow;
@@ -26,6 +26,7 @@ namespace AimpLyrics
         private void SetUpLogger()
         {
             var logFilePath = Path.Combine(Assembly.GetExecutingAssembly().GetName().Name, "log.txt");
+            File.Delete(logFilePath);
             Trace.Listeners.Add(new TextWriterTraceListener(logFilePath));
             Trace.AutoFlush = true;
         }

@@ -32,8 +32,8 @@ namespace AimpLyrics
 
 #if DEBUG
             BrowserPanel.Visibility = Visibility.Visible;
-            UpdateSongInfo();
 #endif
+            UpdateSongInfo();
         }
 
         private void UpdateSongInfo()
@@ -47,6 +47,7 @@ namespace AimpLyrics
             {
                 Lyrics.Text = _fileInfo.Lyrics;
                 _source = LyricsSource.Tag;
+                Source.Text = _source.ToString();
                 Trace.WriteLine("Lyrics received from lyrics tag");
             }
             else
@@ -56,6 +57,7 @@ namespace AimpLyrics
         private void ClearLyrics()
         {
             Lyrics.Text = "";
+            Source.Text = "";
             _source = LyricsSource.None;
         }
 
@@ -71,6 +73,7 @@ namespace AimpLyrics
 
             Lyrics.Text = File.ReadAllText(_filePath);
             _source = LyricsSource.File;
+            Source.Text = Path.GetFileName(_filePath);
             Trace.WriteLine($"Lyrics received from {_filePath}");
             return true;
         }
@@ -98,6 +101,7 @@ namespace AimpLyrics
                     Lyrics.Text += children[1].innerText;
 
                     _source = LyricsSource.Google;
+                    Source.Text = _source.ToString();
                     Trace.WriteLine("Lyrics received from Google");
                     break;
                 }
