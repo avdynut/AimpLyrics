@@ -55,7 +55,6 @@
     <Reference Include="AIMP.SDK, Version=4.50.2048.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AimpSDK.4.50.2048\lib\net462\AIMP.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

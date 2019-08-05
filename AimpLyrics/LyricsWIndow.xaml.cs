@@ -33,7 +33,7 @@ namespace AimpLyrics
 #if DEBUG
             BrowserPanel.Visibility = Visibility.Visible;
 #endif
-            UpdateSongInfo();
+            Loaded += (s, e) => UpdateSongInfo();
         }
 
         private void UpdateSongInfo()
@@ -43,14 +43,10 @@ namespace AimpLyrics
             Artist.Text = _fileInfo.Artist;
             Title.Text = _fileInfo.Title;
 
-            if (!GetLyricsFromFile() && !string.IsNullOrEmpty(_fileInfo.Lyrics))
-            {
-                Lyrics.Text = _fileInfo.Lyrics;
-                _source = LyricsSource.Tag;
-                Source.Text = _source.ToString();
-                Trace.WriteLine("Lyrics received from lyrics tag");
-            }
-            else
+            bool found = GetLyricsFromFile();
+            if (!found)
+                found = GetLyricsFromTag();
+            if (!found)
                 SearchLyricsInGoogle();
         }
 
@@ -75,6 +71,18 @@ namespace AimpLyrics
             _source = LyricsSource.File;
             Source.Text = Path.GetFileName(_filePath);
             Trace.WriteLine($"Lyrics received from {_filePath}");
+            return true;
+        }
+
+        private bool GetLyricsFromTag()
+        {
+            if (string.IsNullOrEmpty(_fileInfo.Lyrics))
+                return false;
+
+            Lyrics.Text = _fileInfo.Lyrics;
+            _source = LyricsSource.Tag;
+            Source.Text = _source.ToString();
+            Trace.WriteLine("Lyrics received from lyrics tag");
             return true;
         }
 
@@ -105,6 +113,11 @@ namespace AimpLyrics
                     Trace.WriteLine("Lyrics received from Google");
                     break;
                 }
+            }
+            if (_source == LyricsSource.None)
+            {
+                Trace.WriteLine("Lyrics not found");
+                Source.Text = "Not Found";
             }
         }
 
@@ -143,6 +156,7 @@ namespace AimpLyrics
                 case LyricsSource.Google:
                     _filePath = Path.ChangeExtension(_fileInfo.FileName, "txt");
                     _source = LyricsSource.File;
+                    Source.Text = Path.GetFileName(_filePath);
                     SaveLyricsToFile();
                     break;
             }

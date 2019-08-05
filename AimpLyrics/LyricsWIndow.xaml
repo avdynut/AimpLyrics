@@ -30,7 +30,7 @@
         <TextBox Grid.Row="1" Name="Lyrics" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"
                  FontSize="{Binding ElementName=FontSize, Path=Text}" Margin="2"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <TextBlock Text="Lyrics Source: "/>
+            <TextBlock Text="Lyrics Source: " Margin="2,0"/>
             <TextBlock Name="Source"/>
         </StackPanel>
         <StackPanel Grid.Row="3" Orientation="Horizontal">

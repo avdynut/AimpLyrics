@@ -39,7 +39,12 @@ namespace AimpLyrics
                 action.Id = "aimp.lyrics.open.window";
                 action.Name = "Open Lyrics";
                 action.GroupName = "Lyrics";
-                action.OnExecute += (sender, args) => _lyricsWindow.Show();
+
+                action.OnExecute += (sender, args) =>
+                {
+                    _lyricsWindow.Show();
+                    _lyricsWindow.Activate();
+                };
 
                 menuItem.Action = action;
                 Player.ActionManager.Register(action);
