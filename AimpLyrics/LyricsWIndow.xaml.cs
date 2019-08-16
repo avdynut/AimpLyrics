@@ -2,6 +2,7 @@
 using AIMP.SDK.FileManager;
 using AIMP.SDK.Player;
 using mshtml;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -95,25 +96,35 @@ namespace AimpLyrics
 
         private void OnBrowserLoadCompleted(object sender, NavigationEventArgs e)
         {
-            var doc = (HTMLDocument)Browser.Document;
-            var divs = doc.getElementsByTagName("div");
-
-            foreach (var div in divs)
+            try
             {
-                var element = (IHTMLElement)div;
-                if (element.className == "Oh5wg")
-                {
-                    var children = (element.children as IHTMLElementCollection).Cast<IHTMLElement>().ToArray();
-                    Lyrics.Text = children[0].innerText;
-                    Lyrics.Text = Lyrics.Text.Remove(Lyrics.Text.LastIndexOf("\r\n\r\n") + 1);
-                    Lyrics.Text += children[1].innerText;
+                var doc = (HTMLDocument)Browser.Document;
+                var divs = doc.getElementsByTagName("div");
 
-                    _source = LyricsSource.Google;
-                    Source.Text = _source.ToString();
-                    Trace.WriteLine("Lyrics received from Google");
-                    break;
+                foreach (var div in divs)
+                {
+                    var element = (IHTMLElement)div;
+                    if (element.className == "Oh5wg")
+                    {
+                        var text = (element.children as IHTMLElementCollection).Cast<IHTMLElement>()
+                            .Select(x => x.innerText?.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                        Lyrics.Text = text[0];
+                        int cutIndex = Lyrics.Text.LastIndexOf("\r\n\r\n") + 1;
+                        Lyrics.Text = Lyrics.Text.Remove(cutIndex);
+                        Lyrics.Text += text[1];
+
+                        _source = LyricsSource.Google;
+                        Source.Text = _source.ToString();
+                        Trace.WriteLine("Lyrics received from Google");
+                        break;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
+
             if (_source == LyricsSource.None)
             {
                 Trace.WriteLine("Lyrics not found");
