@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace AimpLyrics
 {
-    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.2", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
+    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.1", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
     public class AimpLyricsPlugin : AimpPlugin
     {
         private LyricsWindow _lyricsWindow;

@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
 using System.Windows.Navigation;
@@ -95,29 +94,11 @@ namespace AimpLyrics
             Trace.WriteLine($"Seaching lyrics by term: {searchTerm}");
         }
 
-        private async void OnBrowserLoadCompleted(object sender, NavigationEventArgs e)
-        {
-            var doc = (HTMLDocument)Browser.Document;
-            string lyrics = await Task.Run(() => ParseLyrics(doc));
-
-            if (lyrics == null)
-            {
-                Trace.WriteLine("Lyrics not found");
-                Source.Text = "Not Found";
-            }
-            else
-            {
-                Lyrics.Text = lyrics;
-                _source = LyricsSource.Google;
-                Source.Text = _source.ToString();
-                Trace.WriteLine("Lyrics received from Google");
-            }
-        }
-
-        private string ParseLyrics(HTMLDocument doc)
+        private void OnBrowserLoadCompleted(object sender, NavigationEventArgs e)
         {
             try
             {
+                var doc = (HTMLDocument)Browser.Document;
                 var divs = doc.getElementsByTagName("div");
 
                 foreach (var div in divs)
@@ -127,11 +108,15 @@ namespace AimpLyrics
                     {
                         var text = (element.children as IHTMLElementCollection).Cast<IHTMLElement>()
                             .Select(x => x.innerText?.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToArray();
-                        string lyrics = text[0];
-                        int cutIndex = lyrics.LastIndexOf("\r\n\r\n") + 1;
-                        lyrics = lyrics.Remove(cutIndex);
-                        lyrics += text[1];
-                        return lyrics;
+                        Lyrics.Text = text[0];
+                        int cutIndex = Lyrics.Text.LastIndexOf("\r\n\r\n") + 1;
+                        Lyrics.Text = Lyrics.Text.Remove(cutIndex);
+                        Lyrics.Text += text[1];
+
+                        _source = LyricsSource.Google;
+                        Source.Text = _source.ToString();
+                        Trace.WriteLine("Lyrics received from Google");
+                        break;
                     }
                 }
             }
@@ -139,7 +124,12 @@ namespace AimpLyrics
             {
                 Trace.WriteLine(ex);
             }
-            return null;
+
+            if (_source == LyricsSource.None)
+            {
+                Trace.WriteLine("Lyrics not found");
+                Source.Text = "Not Found";
+            }
         }
 
         private void SaveLyricsToFile()
