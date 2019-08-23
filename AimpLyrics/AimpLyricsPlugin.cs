@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace AimpLyrics
 {
-    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.0", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
+    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.1", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
     public class AimpLyricsPlugin : AimpPlugin
     {
         private LyricsWindow _lyricsWindow;
@@ -47,8 +47,8 @@ namespace AimpLyrics
                 };
 
                 menuItem.Action = action;
-                Player.ActionManager.Register(action);
-                Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
+                if (Player.ActionManager.Register(action) == AimpActionResult.OK)
+                    Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
             }
         }
 
