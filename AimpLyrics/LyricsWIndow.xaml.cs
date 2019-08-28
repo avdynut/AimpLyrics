@@ -39,8 +39,11 @@ namespace AimpLyrics
 
         private void UpdateSongInfo()
         {
-            ClearLyrics();
             _fileInfo = _player.CurrentFileInfo;
+            if (_fileInfo == null)
+                return;
+
+            ClearLyrics();
             Artist.Text = _fileInfo.Artist;
             Title.Text = _fileInfo.Title;
 
@@ -89,6 +92,8 @@ namespace AimpLyrics
 
         private void SearchLyricsInGoogle()
         {
+            if (string.IsNullOrEmpty(Artist.Text) && string.IsNullOrEmpty(Title.Text))
+                return;
             string searchTerm = HttpUtility.UrlEncode($"{Artist.Text} {Title.Text} lyrics");
             Browser.Navigate("https://www.google.com/search?q=" + searchTerm);
             Trace.WriteLine($"Seaching lyrics by term: {searchTerm}");
