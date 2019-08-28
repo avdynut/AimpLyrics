@@ -8,9 +8,9 @@ namespace AimpLyrics
     {
         public event Action FileInfoReceived;
 
-        public AimpActionResult CoreMessage(AimpMessages.AimpCoreMessageType message, int param1, int param2)
+        public AimpActionResult CoreMessage(AimpCoreMessageType message, int param1, int param2)
         {
-            if (message == AimpMessages.AimpCoreMessageType.AIMP_MSG_EVENT_PLAYABLE_FILE_INFO)
+            if (message == AimpCoreMessageType.AIMP_MSG_EVENT_PLAYABLE_FILE_INFO)
                 FileInfoReceived?.Invoke();
             return AimpActionResult.OK;
         }

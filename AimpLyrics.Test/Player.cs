@@ -78,7 +78,6 @@ namespace AimpLyrics.Test
 
         public IAimpServiceLyrics ServiceLyrics => throw new NotImplementedException();
 
-        public event EventHandler<StateChangedEventArgs> StateChanged;
         public event EventHandler LanguageChanged;
         public event EventHandler TrackChanged;
 
