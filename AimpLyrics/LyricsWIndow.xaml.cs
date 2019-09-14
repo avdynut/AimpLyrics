@@ -7,9 +7,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Web;
 using System.Windows;
-using System.Windows.Navigation;
 
 namespace AimpLyrics
 {
@@ -31,9 +31,6 @@ namespace AimpLyrics
             _player = player;
             hook.FileInfoReceived += UpdateSongInfo;
 
-#if DEBUG
-            BrowserPanel.Visibility = Visibility.Visible;
-#endif
             Loaded += (s, e) => UpdateSongInfo();
         }
 
@@ -95,15 +92,28 @@ namespace AimpLyrics
             if (string.IsNullOrEmpty(Artist.Text) && string.IsNullOrEmpty(Title.Text))
                 return;
             string searchTerm = HttpUtility.UrlEncode($"{Artist.Text} {Title.Text} lyrics");
-            Browser.Navigate("https://www.google.com/search?q=" + searchTerm);
+            string url = "https://www.google.com/search?q=" + searchTerm;
+
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36");
+            httpClient.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ru,en");
+            var html = httpClient.GetStringAsync(url).Result;
+
+#if DEBUG
+            File.WriteAllText("doc.html", html);
+#endif
+
+            var doc = new HTMLDocument() as IHTMLDocument2;
+            doc.write(html);
+            ParseLyrics(doc as HTMLDocument);
+
             Trace.WriteLine($"Seaching lyrics by term: {searchTerm}");
         }
 
-        private void OnBrowserLoadCompleted(object sender, NavigationEventArgs e)
+        private void ParseLyrics(HTMLDocument doc)
         {
             try
             {
-                var doc = (HTMLDocument)Browser.Document;
                 var divs = doc.getElementsByTagName("div");
 
                 foreach (var div in divs)
@@ -111,13 +121,20 @@ namespace AimpLyrics
                     var element = (IHTMLElement)div;
                     if (element.className == "Oh5wg")
                     {
-                        var text = (element.children as IHTMLElementCollection).Cast<IHTMLElement>()
-                            .Select(x => x.innerText?.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToArray();
-                        Lyrics.Text = text[0];
-                        int cutIndex = Lyrics.Text.LastIndexOf("\r\n\r\n") + 1;
-                        Lyrics.Text = Lyrics.Text.Remove(cutIndex);
-                        Lyrics.Text += text[1];
+                        var blocks = (element.children as IHTMLElementCollection).Cast<IHTMLElement>().ToList();
+                        if (blocks.Count > 2)
+                            blocks.RemoveAt(0);
+                        var visibleVerses = (blocks[0].children as IHTMLElementCollection).Cast<IHTMLElement>().ToArray();
 
+                        string text = "";
+                        string twoNewLines = Environment.NewLine + Environment.NewLine;
+                        for (int i = 0; i < visibleVerses.Length - 1; i++)
+                            text += visibleVerses[i].innerText + twoNewLines;
+
+                        var hiddenVerses = (blocks[1].children as IHTMLElementCollection).Cast<IHTMLElement>().Select(x => x.innerText);
+                        text += string.Join(twoNewLines, hiddenVerses);
+
+                        Lyrics.Text = text;
                         _source = LyricsSource.Google;
                         Source.Text = _source.ToString();
                         Trace.WriteLine("Lyrics received from Google");
