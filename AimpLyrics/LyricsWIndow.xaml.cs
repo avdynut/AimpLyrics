@@ -1,6 +1,7 @@
 ﻿using AIMP.SDK;
 using AIMP.SDK.FileManager;
 using AIMP.SDK.Player;
+using Microsoft.Win32;
 using mshtml;
 using System;
 using System.ComponentModel;
@@ -30,6 +31,7 @@ namespace AimpLyrics
 
             _player = player;
             hook.FileInfoReceived += UpdateSongInfo;
+            hook.PlayerStopped += () => _fileInfo = null;
 
             Loaded += (s, e) => UpdateSongInfo();
         }
@@ -156,7 +158,17 @@ namespace AimpLyrics
 
         private void SaveLyricsToFile()
         {
+            if (_fileInfo == null)
+            {
+                var dialog = new SaveFileDialog();
+                dialog.FileName = Path.GetFileName(_filePath);
+                dialog.Filter= "Text file (*.txt)|*.txt|Lyrics file (*.lrc)|*.lrc|Subtitles file (*.srt)|*.srt";
+                if (dialog.ShowDialog() != true)
+                    return;
+                _filePath = dialog.FileName;
+            }
             File.WriteAllText(_filePath, Lyrics.Text);
+            Source.Text = Path.GetFileName(_filePath);
             Trace.WriteLine($"Lyrics have been saved to {_filePath}");
         }
 
@@ -187,10 +199,9 @@ namespace AimpLyrics
                     SaveLyricsToFile();
                     break;
                 case LyricsSource.Google:
-                    _filePath = Path.ChangeExtension(_fileInfo.FileName, "txt");
-                    _source = LyricsSource.File;
-                    Source.Text = Path.GetFileName(_filePath);
+                    _filePath = _fileInfo == null ? $"{Artist.Text} - {Title.Text}.txt" : Path.ChangeExtension(_fileInfo.FileName, "txt");
                     SaveLyricsToFile();
+                    _source = LyricsSource.File;                    
                     break;
             }
         }
