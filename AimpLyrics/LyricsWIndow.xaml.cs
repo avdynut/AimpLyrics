@@ -9,8 +9,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Web;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace AimpLyrics
 {
@@ -50,7 +52,7 @@ namespace AimpLyrics
             if (!found)
                 found = GetLyricsFromTag();
             if (!found)
-                SearchLyricsInGoogle();
+                SearchLyricsInGoogleOnBackground();
         }
 
         private void ClearLyrics()
@@ -89,12 +91,21 @@ namespace AimpLyrics
             return true;
         }
 
-        private void SearchLyricsInGoogle()
+        private void SearchLyricsInGoogleOnBackground()
         {
-            if (string.IsNullOrEmpty(Artist.Text) && string.IsNullOrEmpty(Title.Text))
+            string artist = Artist.Text;
+            string title = Title.Text;
+            var thread = new Thread(() => SearchLyricsInGoogle(artist, title));
+            thread.Start();
+        }
+
+        private void SearchLyricsInGoogle(string artist, string title)
+        {
+            if (string.IsNullOrEmpty(artist) && string.IsNullOrEmpty(title))
                 return;
-            string searchTerm = HttpUtility.UrlEncode($"{Artist.Text} {Title.Text} lyrics");
+            string searchTerm = HttpUtility.UrlEncode($"{artist} {title} lyrics");
             string url = "https://www.google.com/search?q=" + searchTerm;
+            Trace.WriteLine($"Seaching lyrics by term: {searchTerm}");
 
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36");
@@ -107,17 +118,30 @@ namespace AimpLyrics
 
             var doc = new HTMLDocument() as IHTMLDocument2;
             doc.write(html);
-            ParseLyrics(doc as HTMLDocument);
+            string lyrics = ParseLyrics(doc as HTMLDocument);
 
-            Trace.WriteLine($"Seaching lyrics by term: {searchTerm}");
+            if (string.IsNullOrEmpty(lyrics))
+            {
+                Dispatcher.BeginInvoke(new Action(() => Source.Text = "Not Found"));
+                Trace.WriteLine("Lyrics not found");
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    Lyrics.Text = lyrics;
+                    _source = LyricsSource.Google;
+                    Source.Text = _source.ToString();
+                }));
+                Trace.WriteLine("Lyrics received from Google");
+            }
         }
 
-        private void ParseLyrics(HTMLDocument doc)
+        private string ParseLyrics(HTMLDocument doc)
         {
             try
             {
                 var divs = doc.getElementsByTagName("div");
-
                 foreach (var div in divs)
                 {
                     var element = (IHTMLElement)div;
@@ -136,11 +160,7 @@ namespace AimpLyrics
                         var hiddenVerses = (blocks[1].children as IHTMLElementCollection).Cast<IHTMLElement>().Select(x => x.innerText);
                         text += string.Join(twoNewLines, hiddenVerses);
 
-                        Lyrics.Text = text;
-                        _source = LyricsSource.Google;
-                        Source.Text = _source.ToString();
-                        Trace.WriteLine("Lyrics received from Google");
-                        break;
+                        return text;
                     }
                 }
             }
@@ -148,12 +168,7 @@ namespace AimpLyrics
             {
                 Trace.WriteLine(ex);
             }
-
-            if (_source == LyricsSource.None)
-            {
-                Trace.WriteLine("Lyrics not found");
-                Source.Text = "Not Found";
-            }
+            return null;
         }
 
         private void SaveLyricsToFile()
@@ -162,7 +177,7 @@ namespace AimpLyrics
             {
                 var dialog = new SaveFileDialog();
                 dialog.FileName = Path.GetFileName(_filePath);
-                dialog.Filter= "Text file (*.txt)|*.txt|Lyrics file (*.lrc)|*.lrc|Subtitles file (*.srt)|*.srt";
+                dialog.Filter = "Text file (*.txt)|*.txt|Lyrics file (*.lrc)|*.lrc|Subtitles file (*.srt)|*.srt";
                 if (dialog.ShowDialog() != true)
                     return;
                 _filePath = dialog.FileName;
@@ -201,7 +216,7 @@ namespace AimpLyrics
                 case LyricsSource.Google:
                     _filePath = _fileInfo == null ? $"{Artist.Text} - {Title.Text}.txt" : Path.ChangeExtension(_fileInfo.FileName, "txt");
                     SaveLyricsToFile();
-                    _source = LyricsSource.File;                    
+                    _source = LyricsSource.File;
                     break;
             }
         }
@@ -209,7 +224,7 @@ namespace AimpLyrics
         private void OnSearchButtonClick(object sender, RoutedEventArgs e)
         {
             ClearLyrics();
-            SearchLyricsInGoogle();
+            SearchLyricsInGoogleOnBackground();
         }
 
         private void OnClosing(object sender, CancelEventArgs e)
