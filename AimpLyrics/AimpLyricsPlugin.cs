@@ -9,17 +9,9 @@ namespace AimpLyrics
     [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.3", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
     public class AimpLyricsPlugin : AimpPlugin
     {
-        private LyricsWindow _lyricsWindow;
-        private AimpMessageHook _hook;
-
         public override void Initialize()
         {
             SetUpLogger();
-
-            _hook = new AimpMessageHook();
-            Player.ServiceMessageDispatcher.Hook(_hook);
-            _lyricsWindow = new LyricsWindow(Player, _hook);
-
             AddMenuItem();
         }
 
@@ -33,29 +25,29 @@ namespace AimpLyrics
 
         private void AddMenuItem()
         {
-            if (Player.MenuManager.CreateMenuItem(out IAimpMenuItem menuItem) == AimpActionResult.OK)
+            var menuItemCreated = Player.MenuManager.CreateMenuItem(out IAimpMenuItem menuItem);
+            if (menuItemCreated != AimpActionResult.OK)
+                return;
+
+            var action = Player.ActionManager.CreateAction();
+            action.Id = "aimp.lyrics.open.window";
+            action.Name = "Open Lyrics";
+            action.GroupName = "Lyrics";
+
+            action.OnExecute += (sender, args) =>
             {
-                menuItem.Id = "aimp.lyrics.open.window";
-                menuItem.Name = "Lyrics";
+                var lyricsWindow = new LyricsWindow(Player);
+                lyricsWindow.Show();
+                lyricsWindow.Activate();
+            };
 
-                menuItem.OnExecute += (sender, args) =>
-                {
-                    _lyricsWindow.Show();
-                    _lyricsWindow.Activate();
-                };
-
-                var result = Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
-                if (result != AimpActionResult.OK)
-                {
-                    Trace.WriteLine("Menu item is not added");
-                }
-            }
+            menuItem.Action = action;
+            if (Player.ActionManager.Register(action) == AimpActionResult.OK)
+                Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
         }
 
         public override void Dispose()
         {
-            _lyricsWindow?.Close();
-            Player.ServiceMessageDispatcher.Unhook(_hook);
             Trace.Close();
         }
     }

@@ -22,18 +22,22 @@ namespace AimpLyrics
     public partial class LyricsWindow : Window
     {
         private readonly IAimpPlayer _player;
+        private readonly AimpMessageHook _hook;
 
         private IAimpFileInfo _fileInfo;
         private string _filePath;
         private LyricsSource _source;
 
-        public LyricsWindow(IAimpPlayer player, AimpMessageHook hook)
+        public LyricsWindow(IAimpPlayer player)
         {
             InitializeComponent();
 
             _player = player;
-            hook.FileInfoReceived += UpdateSongInfo;
-            hook.PlayerStopped += () => _fileInfo = null;
+
+            _hook = new AimpMessageHook();
+            _hook.FileInfoReceived += UpdateSongInfo;
+            _hook.PlayerStopped += ResetFileInfo;
+            _player.ServiceMessageDispatcher.Hook(_hook);
 
             Loaded += (s, e) => UpdateSongInfo();
         }
@@ -53,6 +57,11 @@ namespace AimpLyrics
                 found = GetLyricsFromTag();
             if (!found)
                 SearchLyricsInGoogleOnBackground();
+        }
+
+        private void ResetFileInfo()
+        {
+            _fileInfo = null;
         }
 
         private void ClearLyrics()
@@ -229,8 +238,9 @@ namespace AimpLyrics
 
         private void OnClosing(object sender, CancelEventArgs e)
         {
-            Hide();
-            e.Cancel = true;
+            _hook.FileInfoReceived -= UpdateSongInfo;
+            _hook.PlayerStopped -= ResetFileInfo;
+            _player.ServiceMessageDispatcher.Unhook(_hook);
         }
     }
 }
