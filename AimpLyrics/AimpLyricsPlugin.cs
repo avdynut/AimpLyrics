@@ -35,20 +35,20 @@ namespace AimpLyrics
         {
             if (Player.MenuManager.CreateMenuItem(out IAimpMenuItem menuItem) == AimpActionResult.OK)
             {
-                var action = Player.ActionManager.CreateAction();
-                action.Id = "aimp.lyrics.open.window";
-                action.Name = "Open Lyrics";
-                action.GroupName = "Lyrics";
+                menuItem.Id = "aimp.lyrics.open.window";
+                menuItem.Name = "Lyrics";
 
-                action.OnExecute += (sender, args) =>
+                menuItem.OnExecute += (sender, args) =>
                 {
                     _lyricsWindow.Show();
                     _lyricsWindow.Activate();
                 };
 
-                menuItem.Action = action;
-                if (Player.ActionManager.Register(action) == AimpActionResult.OK)
-                    Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
+                var result = Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
+                if (result != AimpActionResult.OK)
+                {
+                    Trace.WriteLine("Menu item is not added");
+                }
             }
         }
 

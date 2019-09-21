@@ -97,6 +97,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName)==Release call CopyPlugin.bat</PostBuildEvent>
+    <PostBuildEvent>call CopyPlugin.bat</PostBuildEvent>
   </PropertyGroup>
 </Project>
