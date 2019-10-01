@@ -182,17 +182,28 @@ namespace AimpLyrics
 
         private void SaveLyricsToFile()
         {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "Text file (*.txt)|*.txt|Lyrics file (*.lrc)|*.lrc|Subtitles file (*.srt)|*.srt"
+            };
+
             if (_fileInfo == null)
             {
-                var dialog = new SaveFileDialog();
-                dialog.FileName = Path.GetFileName(_filePath);
-                dialog.Filter = "Text file (*.txt)|*.txt|Lyrics file (*.lrc)|*.lrc|Subtitles file (*.srt)|*.srt";
-                if (dialog.ShowDialog() != true)
-                    return;
-                _filePath = dialog.FileName;
+                dialog.FileName = $"{Artist.Text} - {Title.Text}.txt";
             }
+            else
+            {
+                dialog.FileName = Path.GetFileNameWithoutExtension(_fileInfo.FileName) + ".txt";
+                dialog.InitialDirectory = Path.GetDirectoryName(_fileInfo.FileName);
+            }
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            _filePath = dialog.FileName;
             File.WriteAllText(_filePath, Lyrics.Text);
             Source.Text = Path.GetFileName(_filePath);
+            _source = LyricsSource.File;
             Trace.WriteLine($"Lyrics have been saved to {_filePath}");
         }
 
@@ -212,22 +223,7 @@ namespace AimpLyrics
 
         private void SaveLyrics(object sender, RoutedEventArgs e)
         {
-            switch (_source)
-            {
-                case LyricsSource.None:
-                    return;
-                case LyricsSource.Tag:
-                    SaveLyricsToTag();
-                    break;
-                case LyricsSource.File:
-                    SaveLyricsToFile();
-                    break;
-                case LyricsSource.Google:
-                    _filePath = _fileInfo == null ? $"{Artist.Text} - {Title.Text}.txt" : Path.ChangeExtension(_fileInfo.FileName, "txt");
-                    SaveLyricsToFile();
-                    _source = LyricsSource.File;
-                    break;
-            }
+            SaveLyricsToFile();
         }
 
         private void OnSearchButtonClick(object sender, RoutedEventArgs e)

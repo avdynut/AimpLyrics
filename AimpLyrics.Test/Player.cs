@@ -39,7 +39,7 @@ namespace AimpLyrics.Test
 
         public IAimpServiceOptionsDialog ServiceOptionsDialog => throw new NotImplementedException();
 
-        public IAimpServiceMessageDispatcher ServiceMessageDispatcher => throw new NotImplementedException();
+        public IAimpServiceMessageDispatcher ServiceMessageDispatcher => new ServiceMessageDispatcher();
 
         public bool IsMute { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public float Volume { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

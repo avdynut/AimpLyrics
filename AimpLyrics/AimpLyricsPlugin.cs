@@ -13,6 +13,7 @@ namespace AimpLyrics
         {
             SetUpLogger();
             AddMenuItem();
+            Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
         }
 
         private void SetUpLogger()
