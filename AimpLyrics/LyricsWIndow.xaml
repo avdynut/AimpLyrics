@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Lyrics"
         WindowStyle="ToolWindow"
-        Closing="OnClosing"
         SizeToContent="Width" MinWidth="250">
     <Grid>
         <Grid.RowDefinitions>

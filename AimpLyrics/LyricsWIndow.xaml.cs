@@ -28,13 +28,15 @@ namespace AimpLyrics
         private string _filePath;
         private LyricsSource _source;
 
-        public LyricsWindow(IAimpPlayer player)
+        private bool _hideOnClosing = true;
+
+        public LyricsWindow(IAimpPlayer player, AimpMessageHook hook)
         {
             InitializeComponent();
 
             _player = player;
+            _hook = hook;
 
-            _hook = new AimpMessageHook();
             _hook.FileInfoReceived += UpdateSongInfo;
             _hook.PlayerStopped += ResetFileInfo;
             _player.ServiceMessageDispatcher.Hook(_hook);
@@ -232,11 +234,26 @@ namespace AimpLyrics
             SearchLyricsInGoogleOnBackground();
         }
 
-        private void OnClosing(object sender, CancelEventArgs e)
+        protected override void OnClosing(CancelEventArgs e)
         {
+            if (_hideOnClosing)
+            {
+                Hide();
+                e.Cancel = true;
+            }
+            else
+            {
+                base.OnClosing(e);
+            }
+        }
+
+        public new void Close()
+        {
+            _hideOnClosing = false;
             _hook.FileInfoReceived -= UpdateSongInfo;
             _hook.PlayerStopped -= ResetFileInfo;
-            _player.ServiceMessageDispatcher.Unhook(_hook);
+
+            base.Close();
         }
     }
 }

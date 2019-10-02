@@ -9,10 +9,18 @@ namespace AimpLyrics
     [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.3", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
     public class AimpLyricsPlugin : AimpPlugin
     {
+        private LyricsWindow _lyricsWindow;
+        private AimpMessageHook _hook;
+
         public override void Initialize()
         {
             SetUpLogger();
             AddMenuItem();
+
+            _hook = new AimpMessageHook();
+            Player.ServiceMessageDispatcher.Hook(_hook);
+            _lyricsWindow = new LyricsWindow(Player, _hook);
+
             Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
         }
 
@@ -37,9 +45,8 @@ namespace AimpLyrics
 
             action.OnExecute += (sender, args) =>
             {
-                var lyricsWindow = new LyricsWindow(Player);
-                lyricsWindow.Show();
-                lyricsWindow.Activate();
+                _lyricsWindow.Show();
+                _lyricsWindow.Activate();
             };
 
             menuItem.Action = action;
@@ -49,6 +56,8 @@ namespace AimpLyrics
 
         public override void Dispose()
         {
+            _lyricsWindow?.Close();
+            Player.ServiceMessageDispatcher.Unhook(_hook);
             Trace.Close();
         }
     }
