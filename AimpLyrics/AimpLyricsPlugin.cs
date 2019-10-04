@@ -14,14 +14,21 @@ namespace AimpLyrics
 
         public override void Initialize()
         {
-            SetUpLogger();
-            AddMenuItem();
+            if (AddMenuItem())
+            {
+                SetUpLogger();
 
-            _hook = new AimpMessageHook();
-            Player.ServiceMessageDispatcher.Hook(_hook);
-            _lyricsWindow = new LyricsWindow(Player, _hook);
+                _hook = new AimpMessageHook();
+                Player.ServiceMessageDispatcher.Hook(_hook);
 
-            Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
+                _lyricsWindow = new LyricsWindow(Player, _hook);
+
+                Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
+            }
+            else
+            {
+                Trace.WriteLine("Menu item was not added");
+            }
         }
 
         private void SetUpLogger()
@@ -32,11 +39,10 @@ namespace AimpLyrics
             Trace.AutoFlush = true;
         }
 
-        private void AddMenuItem()
+        private bool AddMenuItem()
         {
-            var menuItemCreated = Player.MenuManager.CreateMenuItem(out IAimpMenuItem menuItem);
-            if (menuItemCreated != AimpActionResult.OK)
-                return;
+            if (Player.MenuManager.CreateMenuItem(out IAimpMenuItem menuItem) != AimpActionResult.OK)
+                return false;
 
             var action = Player.ActionManager.CreateAction();
             action.Id = "aimp.lyrics.open.window";
@@ -50,8 +56,11 @@ namespace AimpLyrics
             };
 
             menuItem.Action = action;
-            if (Player.ActionManager.Register(action) == AimpActionResult.OK)
-                Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem);
+
+            if (Player.ActionManager.Register(action) != AimpActionResult.OK)
+                return false;
+
+            return Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem) == AimpActionResult.OK;
         }
 
         public override void Dispose()
