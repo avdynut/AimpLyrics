@@ -3,6 +3,8 @@ using AIMP.SDK.MenuManager;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace AimpLyrics
 {
@@ -14,21 +16,17 @@ namespace AimpLyrics
 
         public override void Initialize()
         {
-            if (AddMenuItem())
-            {
-                SetUpLogger();
+            if (!AddMenuItem())
+                return;
 
-                _hook = new AimpMessageHook();
-                Player.ServiceMessageDispatcher.Hook(_hook);
+            SetUpLogger();
 
-                _lyricsWindow = new LyricsWindow(Player, _hook);
+            _hook = new AimpMessageHook();
+            Player.ServiceMessageDispatcher.Hook(_hook);
 
-                Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
-            }
-            else
-            {
-                Trace.WriteLine("Menu item was not added");
-            }
+            _lyricsWindow = new LyricsWindow(Player, _hook);
+
+            Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
         }
 
         private void SetUpLogger()
@@ -48,6 +46,8 @@ namespace AimpLyrics
             action.Id = "aimp.lyrics.open.window";
             action.Name = "Open Lyrics";
             action.GroupName = "Lyrics";
+            action.DefaultLocalHotKey = Player.ActionManager.MakeHotkey(ModifierKeys.Shift, (uint)Keys.L);
+            action.DefaultGlobalHotKey = Player.ActionManager.MakeHotkey(ModifierKeys.Control | ModifierKeys.Alt, (uint)Keys.L);
 
             action.OnExecute += (sender, args) =>
             {
