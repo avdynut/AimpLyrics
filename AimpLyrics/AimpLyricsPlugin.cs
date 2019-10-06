@@ -13,20 +13,34 @@ namespace AimpLyrics
     public class AimpLyricsPlugin : AimpPlugin
     {
         private LyricsWindow? _lyricsWindow;
-        private readonly AimpMessageHook _hook = new AimpMessageHook();
+        private AimpMessageHook? _hook;
 
         public override void Initialize()
         {
             if (!AddMenuItem())
                 return;
 
-            SetUpLogger();
-
+            _hook = new AimpMessageHook();
+            _hook.PlayerLoaded += OnPlayerLoaded;
             Player.ServiceMessageDispatcher.Hook(_hook);
 
             _lyricsWindow = new LyricsWindow(Player, _hook);
 
+            SetUpLogger();
+
             Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
+        }
+
+        private void OnPlayerLoaded()
+        {
+            ShowLyricsWindow();
+            _hook.PlayerLoaded -= OnPlayerLoaded;
+        }
+
+        private void ShowLyricsWindow()
+        {
+            _lyricsWindow?.Show();
+            _lyricsWindow?.Activate();
         }
 
         private void SetUpLogger()
@@ -48,12 +62,7 @@ namespace AimpLyrics
             action.GroupName = "Lyrics";
             action.DefaultLocalHotKey = Player.ActionManager.MakeHotkey(ModifierKeys.Shift, (uint)Keys.L);
             action.DefaultGlobalHotKey = Player.ActionManager.MakeHotkey(ModifierKeys.Control | ModifierKeys.Alt, (uint)Keys.L);
-
-            action.OnExecute += (sender, args) =>
-            {
-                _lyricsWindow?.Show();
-                _lyricsWindow?.Activate();
-            };
+            action.OnExecute += (sender, args) => ShowLyricsWindow();
 
             menuItem.Action = action;
 
