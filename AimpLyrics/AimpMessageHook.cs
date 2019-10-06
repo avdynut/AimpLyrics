@@ -2,12 +2,13 @@
 using AIMP.SDK.MessageDispatcher;
 using System;
 
+#nullable enable
 namespace AimpLyrics
 {
     public class AimpMessageHook : IAimpMessageHook
     {
-        public event Action FileInfoReceived;
-        public event Action PlayerStopped;
+        public event Action? FileInfoReceived;
+        public event Action? PlayerStopped;
 
         public AimpActionResult CoreMessage(AimpCoreMessageType message, int param1, int param2)
         {

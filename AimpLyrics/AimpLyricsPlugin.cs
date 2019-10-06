@@ -6,13 +6,14 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Input;
 
+#nullable enable
 namespace AimpLyrics
 {
     [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.3", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
     public class AimpLyricsPlugin : AimpPlugin
     {
-        private LyricsWindow _lyricsWindow;
-        private AimpMessageHook _hook;
+        private LyricsWindow? _lyricsWindow;
+        private readonly AimpMessageHook _hook = new AimpMessageHook();
 
         public override void Initialize()
         {
@@ -21,7 +22,6 @@ namespace AimpLyrics
 
             SetUpLogger();
 
-            _hook = new AimpMessageHook();
             Player.ServiceMessageDispatcher.Hook(_hook);
 
             _lyricsWindow = new LyricsWindow(Player, _hook);
@@ -51,8 +51,8 @@ namespace AimpLyrics
 
             action.OnExecute += (sender, args) =>
             {
-                _lyricsWindow.Show();
-                _lyricsWindow.Activate();
+                _lyricsWindow?.Show();
+                _lyricsWindow?.Activate();
             };
 
             menuItem.Action = action;
