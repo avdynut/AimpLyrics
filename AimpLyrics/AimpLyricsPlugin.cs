@@ -1,5 +1,6 @@
 ﻿using AIMP.SDK;
 using AIMP.SDK.MenuManager;
+using AimpLyrics.Settings;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -14,6 +15,7 @@ namespace AimpLyrics
     {
         private LyricsWindow? _lyricsWindow;
         private AimpMessageHook? _hook;
+        private ILyricsPluginSettings? _settings;
 
         public override void Initialize()
         {
@@ -21,10 +23,17 @@ namespace AimpLyrics
                 return;
 
             _hook = new AimpMessageHook();
-            _hook.PlayerLoaded += OnPlayerLoaded;
             Player.ServiceMessageDispatcher.Hook(_hook);
 
+            _settings = new AimpLyricsPluginSettings(Player.ServiceConfig);
+
+            if (_settings.OpenWindowOnInitializing)
+                _hook.PlayerLoaded += OnPlayerLoaded;
+
             _lyricsWindow = new LyricsWindow(Player, _hook);
+
+            if (_settings.RestoreWindowHeight)
+                _lyricsWindow.Height = _settings.WindowHeight;
 
             SetUpLogger();
 
@@ -74,6 +83,9 @@ namespace AimpLyrics
 
         public override void Dispose()
         {
+            if (_settings?.RestoreWindowHeight == true && _lyricsWindow != null)
+                _settings.WindowHeight = (int)_lyricsWindow.ActualHeight;
+
             _lyricsWindow?.Close();
             Player.ServiceMessageDispatcher.Unhook(_hook);
             Trace.Close();

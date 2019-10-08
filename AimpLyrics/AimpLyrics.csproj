@@ -74,6 +74,8 @@
       <DependentUpon>LyricsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\AimpLyricsPluginSettings.cs" />
+    <Compile Include="Settings\ILyricsPluginSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CopyPlugin.bat">
