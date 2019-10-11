@@ -24,7 +24,7 @@ namespace AimpLyrics.Test
         public string DiskNumber { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string DiskTotal { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double Duration { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string FileName { get; set; } = @"C:\Users\aarek\Google Диск\Music\Elevation Worship - There Is a Cloud (2017)\Elevation Worship - Do It Again.mp3";
+        public string FileName { get; set; } = @"D:\Music\Elevation Worship - There Is a Cloud (2017)\Elevation Worship - Do It Again.mp3";
         public long FileSize { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Genre { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Lyrics { get; set; } = "";

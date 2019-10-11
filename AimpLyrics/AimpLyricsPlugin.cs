@@ -36,6 +36,7 @@ namespace AimpLyrics
                 _lyricsWindow.Height = _settings.WindowHeight;
 
             SetUpLogger();
+            RegisterOptions();
 
             Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
         }
@@ -79,6 +80,12 @@ namespace AimpLyrics
                 return false;
 
             return Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem) == AimpActionResult.OK;
+        }
+
+        private void RegisterOptions()
+        {
+            var optionsFrame = new OptionsFrame(Player);
+            Player.Core.RegisterExtension(optionsFrame);
         }
 
         public override void Dispose()
