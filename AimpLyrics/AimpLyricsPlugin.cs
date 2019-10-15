@@ -10,9 +10,13 @@ using System.Windows.Input;
 #nullable enable
 namespace AimpLyrics
 {
-    [AimpPlugin("AimpLyrics", "Andrey Arekhva", "1.0.3", AimpPluginType = AimpPluginType.Addons, Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google")]
+    [AimpPlugin(Name, "Andrey Arekhva", Version, AimpPluginType = AimpPluginType.Addons, Description = Description)]
     public class AimpLyricsPlugin : AimpPlugin
     {
+        public const string Name = "AimpLyrics";
+        public const string Version = "1.0.4";
+        public const string Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google";
+
         private LyricsWindow? _lyricsWindow;
         private AimpMessageHook? _hook;
         private ILyricsPluginSettings? _settings;
@@ -20,45 +24,35 @@ namespace AimpLyrics
         public override void Initialize()
         {
             if (!AddMenuItem())
+            {
+                Trace.WriteLine("Cannot create menu item");
                 return;
+            }
 
-            _hook = new AimpMessageHook();
-            Player.ServiceMessageDispatcher.Hook(_hook);
+            if (!RegisterHook())
+            {
+                Trace.WriteLine("Cannot register message hook");
+                return;
+            }
 
             _settings = new AimpLyricsPluginSettings(Player.ServiceConfig);
-
-            if (_settings.OpenWindowOnInitializing)
+            if (_settings.OpenWindowOnInitializing && _hook != null)
                 _hook.PlayerLoaded += OnPlayerLoaded;
 
-            _lyricsWindow = new LyricsWindow(Player, _hook);
+            _lyricsWindow = new LyricsWindow(Player, _hook!);
 
             if (_settings.RestoreWindowHeight)
                 _lyricsWindow.Height = _settings.WindowHeight;
 
+            if (!RegisterOptions())
+            {
+                Trace.WriteLine("Cannot register options frame");
+                return;
+            }
+
             SetUpLogger();
-            RegisterOptions();
 
             Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
-        }
-
-        private void OnPlayerLoaded()
-        {
-            ShowLyricsWindow();
-            _hook.PlayerLoaded -= OnPlayerLoaded;
-        }
-
-        private void ShowLyricsWindow()
-        {
-            _lyricsWindow?.Show();
-            _lyricsWindow?.Activate();
-        }
-
-        private void SetUpLogger()
-        {
-            var logFilePath = Path.Combine(Assembly.GetExecutingAssembly().GetName().Name, "log.txt");
-            File.Delete(logFilePath);
-            Trace.Listeners.Add(new TextWriterTraceListener(logFilePath));
-            Trace.AutoFlush = true;
         }
 
         private bool AddMenuItem()
@@ -82,10 +76,39 @@ namespace AimpLyrics
             return Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem) == AimpActionResult.OK;
         }
 
-        private void RegisterOptions()
+        private bool RegisterHook()
+        {
+            _hook = new AimpMessageHook();
+            return Player.ServiceMessageDispatcher.Hook(_hook) == AimpActionResult.OK;
+        }
+
+        private void OnPlayerLoaded()
+        {
+            if (_hook is null)
+                return;
+
+            ShowLyricsWindow();
+            _hook.PlayerLoaded -= OnPlayerLoaded;
+        }
+
+        private void ShowLyricsWindow()
+        {
+            _lyricsWindow?.Show();
+            _lyricsWindow?.Activate();
+        }
+
+        private bool RegisterOptions()
         {
             var optionsFrame = new OptionsFrame(Player);
-            Player.Core.RegisterExtension(optionsFrame);
+            return Player.Core.RegisterExtension(optionsFrame) == AimpActionResult.OK;
+        }
+
+        private void SetUpLogger()
+        {
+            var logFilePath = Path.Combine(Assembly.GetExecutingAssembly().GetName().Name, "log.txt");
+            File.Delete(logFilePath);
+            Trace.Listeners.Add(new TextWriterTraceListener(logFilePath));
+            Trace.AutoFlush = true;
         }
 
         public override void Dispose()

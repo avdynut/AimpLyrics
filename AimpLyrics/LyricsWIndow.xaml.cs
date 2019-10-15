@@ -1,5 +1,7 @@
-﻿using AIMP.SDK.FileManager;
+﻿using AIMP.SDK;
+using AIMP.SDK.FileManager;
 using AIMP.SDK.Player;
+using AIMP.SDK.TagEditor;
 using Microsoft.Win32;
 using mshtml;
 using System;
@@ -212,19 +214,32 @@ namespace AimpLyrics
             Trace.WriteLine($"Lyrics have been saved to {_filePath}");
         }
 
-        // doesn't save for some reason
-        //private void SaveLyricsToTag()
-        //{
-        //    if (_player.ServiceFileTagEditor.EditFile(_fileInfo.FileName, out var tagEditor) == AimpActionResult.OK)
-        //    {
-        //        if (tagEditor.GetMixedInfo(out var fileInfo) == AimpActionResult.OK)
-        //        {
-        //            fileInfo.Lyrics = Lyrics.Text;
-        //            if (tagEditor.Save() == AimpActionResult.OK)
-        //                Trace.WriteLine("Lyrics have been saved to tag");
-        //        }
-        //    }
-        //}
+        private bool SaveLyricsToTag()
+        {
+            if (_fileInfo == null)
+                return false;
+
+            if (_player.ServiceFileTagEditor.EditFile(_fileInfo.FileName, out var tagEditor) == AimpActionResult.OK)
+            {
+                int tagCount = tagEditor.GetTagCount();
+                for (int i = 0; i < tagCount; i++)
+                {
+                    if (tagEditor.GetTag(i, out var fileTag) == AimpActionResult.OK && fileTag.TagId == TagType.ID3v2)
+                    {
+                        Debug.WriteLine($"{i}: {fileTag.Lyrics} {fileTag.TagId}");
+                        fileTag.Lyrics = Lyrics.Text;
+
+                        if (tagEditor.SetToAll(fileTag) == AimpActionResult.OK)
+                            Debug.WriteLine("SetToAll OK");
+
+                        if (tagEditor.Save() == AimpActionResult.OK)
+                            Trace.WriteLine("Lyrics have been saved to tag");
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         private void SaveLyrics(object sender, RoutedEventArgs e)
         {
