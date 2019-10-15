@@ -1,6 +1,7 @@
 ﻿using AIMP.SDK;
 using AIMP.SDK.FileManager;
 using AIMP.SDK.Player;
+using AIMP.SDK.TagEditor;
 using Microsoft.Win32;
 using mshtml;
 using System;
@@ -14,6 +15,7 @@ using System.Web;
 using System.Windows;
 using System.Windows.Threading;
 
+#nullable enable
 namespace AimpLyrics
 {
     /// <summary>
@@ -24,8 +26,8 @@ namespace AimpLyrics
         private readonly IAimpPlayer _player;
         private readonly AimpMessageHook _hook;
 
-        private IAimpFileInfo _fileInfo;
-        private string _filePath;
+        private IAimpFileInfo? _fileInfo;
+        private string? _filePath;
         private LyricsSource _source;
 
         private bool _hideOnClosing = true;
@@ -47,7 +49,7 @@ namespace AimpLyrics
         private void UpdateSongInfo()
         {
             _fileInfo = _player.CurrentFileInfo;
-            if (_fileInfo == null)
+            if (_fileInfo is null)
                 return;
 
             ClearLyrics();
@@ -75,6 +77,9 @@ namespace AimpLyrics
 
         private bool GetLyricsFromFile()
         {
+            if (_fileInfo is null)
+                return false;
+
             string directory = Path.GetDirectoryName(_fileInfo.FileName);
             string filePattern = Path.GetFileNameWithoutExtension(_fileInfo.FileName) + ".*";
             _filePath = Directory.EnumerateFiles(directory, filePattern)
@@ -92,7 +97,7 @@ namespace AimpLyrics
 
         private bool GetLyricsFromTag()
         {
-            if (string.IsNullOrEmpty(_fileInfo.Lyrics))
+            if (string.IsNullOrEmpty(_fileInfo?.Lyrics))
                 return false;
 
             Lyrics.Text = _fileInfo.Lyrics;
@@ -127,9 +132,9 @@ namespace AimpLyrics
             File.WriteAllText("doc.html", html);
 #endif
 
-            var doc = new HTMLDocument() as IHTMLDocument2;
+            var doc = (IHTMLDocument2)new HTMLDocument();
             doc.write(html);
-            string lyrics = ParseLyrics(doc as HTMLDocument);
+            var lyrics = ParseLyrics((HTMLDocument)doc);
 
             if (string.IsNullOrEmpty(lyrics))
             {
@@ -148,7 +153,7 @@ namespace AimpLyrics
             }
         }
 
-        private string ParseLyrics(HTMLDocument doc)
+        private string? ParseLyrics(HTMLDocument doc)
         {
             try
             {
@@ -209,18 +214,31 @@ namespace AimpLyrics
             Trace.WriteLine($"Lyrics have been saved to {_filePath}");
         }
 
-        // doesn't save for some reason
-        private void SaveLyricsToTag()
+        private bool SaveLyricsToTag()
         {
+            if (_fileInfo == null)
+                return false;
+
             if (_player.ServiceFileTagEditor.EditFile(_fileInfo.FileName, out var tagEditor) == AimpActionResult.OK)
             {
-                if (tagEditor.GetMixedInfo(out var fileInfo) == AimpActionResult.OK)
+                int tagCount = tagEditor.GetTagCount();
+                for (int i = 0; i < tagCount; i++)
                 {
-                    fileInfo.Lyrics = Lyrics.Text;
-                    if (tagEditor.Save() == AimpActionResult.OK)
-                        Trace.WriteLine("Lyrics have been saved to tag");
+                    if (tagEditor.GetTag(i, out var fileTag) == AimpActionResult.OK && fileTag.TagId == TagType.ID3v2)
+                    {
+                        Debug.WriteLine($"{i}: {fileTag.Lyrics} {fileTag.TagId}");
+                        fileTag.Lyrics = Lyrics.Text;
+
+                        if (tagEditor.SetToAll(fileTag) == AimpActionResult.OK)
+                            Debug.WriteLine("SetToAll OK");
+
+                        if (tagEditor.Save() == AimpActionResult.OK)
+                            Trace.WriteLine("Lyrics have been saved to tag");
+                        return true;
+                    }
                 }
             }
+            return false;
         }
 
         private void SaveLyrics(object sender, RoutedEventArgs e)
