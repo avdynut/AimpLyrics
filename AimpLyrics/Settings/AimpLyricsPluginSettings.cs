@@ -1,4 +1,4 @@
-﻿using AIMP.SDK.ConfigurationManager;
+﻿using Aimp4.Api;
 using System;
 using System.Runtime.CompilerServices;
 
@@ -12,7 +12,7 @@ namespace AimpLyrics.Settings
         {
             get
             {
-                string value = _config.GetValueAsString(GetKeyPath());
+                string value = GetString();
 
                 if (bool.TryParse(value, out bool result))
                     return result;
@@ -22,7 +22,7 @@ namespace AimpLyrics.Settings
                     return _defaultOpenWindowOnInitializing;
                 }
             }
-            set => _config.SetValueAsString(GetKeyPath(), value.ToString());
+            set => SetString(Convert.ToString(value));
         }
 
         private readonly bool _defaultRestoreWindowHeight = true;
@@ -30,7 +30,7 @@ namespace AimpLyrics.Settings
         {
             get
             {
-                string value = _config.GetValueAsString(GetKeyPath());
+                string value = GetString();
 
                 if (bool.TryParse(value, out bool result))
                     return result;
@@ -40,7 +40,7 @@ namespace AimpLyrics.Settings
                     return _defaultRestoreWindowHeight;
                 }
             }
-            set => _config.SetValueAsString(GetKeyPath(), value.ToString());
+            set => SetString(Convert.ToString(value));
         }
 
         private readonly int _defaultWindowHeight = 600;
@@ -48,7 +48,7 @@ namespace AimpLyrics.Settings
         {
             get
             {
-                int height = _config.GetValueAsInt32(GetKeyPath());
+                int height = GetInt32();
 
                 if (height < 50 || height > 3000)
                 {
@@ -56,19 +56,53 @@ namespace AimpLyrics.Settings
                 }
                 return height;
             }
-            set => _config.SetValueAsInt32(GetKeyPath(), value);
+            set => SetInt32(value);
         }
 
-        private readonly IAimpServiceConfig _config;
+        private IAIMPServiceConfig Config => AimpLyricsPlugin.Core.GetService<IAIMPServiceConfig>();
 
-        public AimpLyricsPluginSettings(IAimpServiceConfig config)
+        private IAIMPString GetKeyPath(string key)
         {
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            var aimpString = AimpLyricsPlugin.Core.CreateString($"AimpLyrics\\{key}");
+            return aimpString;
         }
 
-        private string GetKeyPath([CallerMemberName] string key = "")
+        private string GetString([CallerMemberName] string key = "")
         {
-            return $"AimpLyrics\\{key}";
+            var aimpKeyPath = GetKeyPath(key);
+            var aimpValue = Config.GetValueAsString(aimpKeyPath);
+            string value = aimpValue.GetData();
+
+            aimpKeyPath?.ReleaseComObject();
+            aimpValue?.ReleaseComObject();
+
+            return value;
+        }
+
+        private int GetInt32([CallerMemberName] string key = "")
+        {
+            var aimpKeyPath = GetKeyPath(key);
+            int value = Config.GetValueAsInt32(aimpKeyPath);
+            aimpKeyPath?.ReleaseComObject();
+            return value;
+        }
+
+        private void SetString(string value, [CallerMemberName] string key = "")
+        {
+            var aimpKeyPath = GetKeyPath(key);
+            var aimpValue = AimpLyricsPlugin.Core.CreateString(value);
+
+            Config.SetValueAsString(aimpKeyPath, aimpValue);
+
+            aimpKeyPath?.ReleaseComObject();
+            aimpValue?.ReleaseComObject();
+        }
+
+        private void SetInt32(int value, [CallerMemberName] string key = "")
+        {
+            var aimpKeyPath = GetKeyPath(key);
+            Config.SetValueAsInt32(aimpKeyPath, value);
+            aimpKeyPath?.ReleaseComObject();
         }
     }
 }

@@ -1,0 +1,50 @@
+namespace Aimp4.Api
+{
+    public enum AIMPFileTagPropId
+    {
+        // IAIMPFileInfo
+        Custom = AIMPFileInfoPropId.Custom,
+        Album = AIMPFileInfoPropId.Album,
+        AlbumArt = AIMPFileInfoPropId.AlbumArt,
+        AlbumArtist = AIMPFileInfoPropId.AlbumArtist,
+        AlbumGain = AIMPFileInfoPropId.AlbumGain,
+        AlbumPeak = AIMPFileInfoPropId.AlbumPeak,
+        Artist = AIMPFileInfoPropId.Artist,
+        BitRate = AIMPFileInfoPropId.BitRate,
+        Bpm = AIMPFileInfoPropId.Bpm,
+        Channels = AIMPFileInfoPropId.Channels,
+        Comment = AIMPFileInfoPropId.Comment,
+        Composer = AIMPFileInfoPropId.Composer,
+        Copyright = AIMPFileInfoPropId.Copyright,
+        CueSheet = AIMPFileInfoPropId.CueSheet,
+        Date = AIMPFileInfoPropId.Date,
+        DiskNumber = AIMPFileInfoPropId.DiskNumber,
+        DiskTotal = AIMPFileInfoPropId.DiskTotal,
+        Duration = AIMPFileInfoPropId.Duration,
+        FileName = AIMPFileInfoPropId.FileName,
+        FileSize = AIMPFileInfoPropId.FileSize,
+        Genre = AIMPFileInfoPropId.Genre,
+        Lyrics = AIMPFileInfoPropId.Lyrics,
+        Mark = AIMPFileInfoPropId.Mark,
+        Publisher = AIMPFileInfoPropId.Publisher,
+        SampleRate = AIMPFileInfoPropId.SampleRate,
+        Title = AIMPFileInfoPropId.Title,
+        TrackGain = AIMPFileInfoPropId.TrackGain,
+        TrackNumber = AIMPFileInfoPropId.TrackNumber,
+        TrackPeak = AIMPFileInfoPropId.TrackPeak,
+        TrackTotal = AIMPFileInfoPropId.TrackTotal,
+        Url = AIMPFileInfoPropId.Url,
+        BitDepth = AIMPFileInfoPropId.BitDepth,
+        Codec = AIMPFileInfoPropId.Codec,
+        StatAddingDate = AIMPFileInfoPropId.StatAddingDate,
+        StatLastPlayDate = AIMPFileInfoPropId.StatLastPlayDate,
+        StatMark = AIMPFileInfoPropId.StatMark,
+        StatPlayCount = AIMPFileInfoPropId.StatPlayCount,
+        StatRating = AIMPFileInfoPropId.StatRating,
+
+        // IAIMPFileTag
+        Base = 100,
+        TagId = Base + 1,
+        DeleteOnSaving = Base + 2,
+    }
+}
