@@ -12,7 +12,6 @@ using System.Web;
 using System.Windows;
 using System.Windows.Threading;
 
-#nullable enable
 namespace AimpLyrics
 {
     /// <summary>
@@ -20,9 +19,9 @@ namespace AimpLyrics
     /// </summary>
     public partial class LyricsWindow : Window
     {
-        private string? _filePath;
-        private string? _lyricsFilePath;
-        private string? _lyrics;
+        private string _filePath;
+        private string _lyricsFilePath;
+        private string _lyrics;
         private LyricsSource _source;
 
         private bool _hideOnClosing = true;
@@ -112,7 +111,14 @@ namespace AimpLyrics
             var html = httpClient.GetStringAsync(url).Result;
 
 #if DEBUG
-            File.WriteAllText("doc.html", html);
+            try
+            {
+                File.WriteAllText("doc.html", html);
+            }
+            catch (IOException ex)
+            {
+                Debug.WriteLine($"Cannot write to file: {ex}");
+            }
 #endif
 
             var doc = (IHTMLDocument2)new HTMLDocument();
@@ -136,7 +142,7 @@ namespace AimpLyrics
             }
         }
 
-        private string? ParseLyrics(HTMLDocument doc)
+        private string ParseLyrics(HTMLDocument doc)
         {
             try
             {

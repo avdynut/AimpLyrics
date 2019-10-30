@@ -1,21 +1,26 @@
 ﻿using Aimp4.Api;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
-#nullable enable
 namespace AimpLyrics.Settings
 {
     public class OptionsFrame : IAIMPOptionsDialogFrame, IAIMPOptionsDialogFrameKeyboardHelper
     {
-        private OptionsForm? _optionsForm;
+        private OptionsForm _optionsForm;
 
         public OptionsFrame()
         {
             Application.EnableVisualStyles();
         }
 
-        public IAIMPString GetName() => AimpLyricsPlugin.Core.CreateString("Lyrics");
+        public IAIMPString GetName()
+        {
+            var aimpString = AimpLyricsPlugin.Core.CreateString("Lyrics");
+            Task.Delay(200).ContinueWith(t => aimpString?.ReleaseComObject());  // костыль, да не будет утечки памяти, аминь
+            return aimpString;
+        }
 
         public IntPtr CreateFrame(IntPtr parentWindow)
         {

@@ -454,6 +454,10 @@ namespace Aimp4.Api
         // AParam1, AParam2: unused
         EventLanguage = EventBase + 17,
 
+        // Called, when player was initialized
+        // AParam1, AParam2: unused
+        EventLoaded = EventBase + 18,
+
         // Called, when AIMP is preparing to terminate
         // AParam1, AParam2: unused
         EventTerminating = EventBase + 19,
