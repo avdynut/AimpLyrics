@@ -84,7 +84,6 @@ namespace AimpLyrics
 
                 var actionManager = Core.GetService<IAIMPServiceActionManager>();
 
-                // todo: setting hot key doesn't work
                 int hotkey = actionManager.MakeHotkey(AIMPActionHotKeyModifiers.Shift, (ushort)Keys.L);
                 action.SetValueAsInt32((int)AIMPActionPropId.DefaultLocalHotKey, hotkey);
 
