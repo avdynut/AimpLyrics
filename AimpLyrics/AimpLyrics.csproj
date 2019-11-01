@@ -74,6 +74,7 @@
     <Compile Include="AimpApiExtensions.cs" />
     <Compile Include="AimpLyricsPlugin.cs" />
     <Compile Include="AimpMessageHook.cs" />
+    <Compile Include="AimpTask.cs" />
     <Compile Include="Api\AIMPActionHotKeyModifiers.cs" />
     <Compile Include="Api\AIMPActionPropId.cs" />
     <Compile Include="Api\AIMPAlarmEventSourceType.cs" />

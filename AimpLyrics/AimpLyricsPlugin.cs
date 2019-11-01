@@ -45,9 +45,8 @@ namespace AimpLyrics
 
             _settings = new AimpLyricsPluginSettings();
 
-            // todo: show window on player loaded
-            //if (_settings.OpenWindowOnInitializing)
-            //    _hook.PlayerLoaded += OnPlayerLoaded;
+            if (_settings.OpenWindowOnInitializing)
+                _hook.PlayerLoaded += OnPlayerLoaded;
 
             if (_settings.RestoreWindowHeight)
                 _lyricsWindow.Height = _settings.WindowHeight;
