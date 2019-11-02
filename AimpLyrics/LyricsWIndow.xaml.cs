@@ -108,17 +108,6 @@ namespace AimpLyrics
             httpClient.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ru,en");
             var html = httpClient.GetStringAsync(url).Result;
 
-#if DEBUG
-            try
-            {
-                File.WriteAllText("doc.html", html);
-            }
-            catch (IOException ex)
-            {
-                Debug.WriteLine($"Cannot write to file: {ex}");
-            }
-#endif
-
             var doc = (IHTMLDocument2)new HTMLDocument();
             doc.write(html);
             var lyrics = ParseLyrics((HTMLDocument)doc);
@@ -213,7 +202,7 @@ namespace AimpLyrics
             var tagCount = tagEditor.GetTagCount();
 
             guid = typeof(IAIMPFileTag).GUID;
-            IAIMPFileTag? fileTag = null;
+            IAIMPFileTag fileTag = null;
             for (int i = 0; i < tagCount; i++)
             {
 

@@ -3,7 +3,6 @@ using AimpLyrics.Settings;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
@@ -14,7 +13,7 @@ namespace AimpLyrics
     {
         public const string Name = "AimpLyrics";
         public const string Author = "Andrey Arekhva";
-        public const string Version = "1.1.0";
+        public const string Version = "1.1.1";
         public const string Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google";
 
         private LyricsWindow _lyricsWindow;
@@ -171,7 +170,11 @@ namespace AimpLyrics
 
         private void SetUpLogger()
         {
-            var logFilePath = Path.Combine(Assembly.GetExecutingAssembly().GetName().Name, "log.txt");
+            var aimpString = Core.GetPath(AIMPCorePath.Profile);
+            string profilePath = aimpString.GetData();
+            aimpString.ReleaseComObject();
+
+            var logFilePath = Path.Combine(profilePath, "AimpLyricsPluginLog.txt");
             File.Delete(logFilePath);
             Trace.Listeners.Add(new TextWriterTraceListener(logFilePath));
             Trace.AutoFlush = true;
