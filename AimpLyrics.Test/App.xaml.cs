@@ -9,7 +9,7 @@ namespace AimpLyrics.Test
     {
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            var window = new LyricsWindow(new Player(), new AimpMessageHook());
+            var window = new LyricsWindow();
             window.Show();
         }
     }

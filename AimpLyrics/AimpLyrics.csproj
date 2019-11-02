@@ -9,11 +9,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AimpLyrics</RootNamespace>
     <AssemblyName>AimpLyrics</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -54,6 +55,11 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
+      <HintPath>$(SolutionDir)packages\DllExport.1.6.5\gcache\metalib\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -65,8 +71,302 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AimpActionEvent.cs" />
+    <Compile Include="AimpApiExtensions.cs" />
     <Compile Include="AimpLyricsPlugin.cs" />
     <Compile Include="AimpMessageHook.cs" />
+    <Compile Include="AimpTask.cs" />
+    <Compile Include="Api\AIMPActionHotKeyModifiers.cs" />
+    <Compile Include="Api\AIMPActionPropId.cs" />
+    <Compile Include="Api\AIMPAlarmEventSourceType.cs" />
+    <Compile Include="Api\AIMPAlbumArtProviderCategory.cs" />
+    <Compile Include="Api\AIMPBuildInMenu.cs" />
+    <Compile Include="Api\AIMPBuildState.cs" />
+    <Compile Include="Api\AIMPConnectionSettingsPropId.cs" />
+    <Compile Include="Api\AIMPConnectionType.cs" />
+    <Compile Include="Api\AIMPCorePath.cs" />
+    <Compile Include="Api\AIMPDecoderFlags.cs" />
+    <Compile Include="Api\AimpDecoderSampleFormat.cs" />
+    <Compile Include="Api\AIMPFileInfoPropId.cs" />
+    <Compile Include="Api\AIMPFileTagId.cs" />
+    <Compile Include="Api\AIMPFileTagPropId.cs" />
+    <Compile Include="Api\AIMPHttpClientFlags.cs" />
+    <Compile Include="Api\AIMPHttpClientMethod.cs" />
+    <Compile Include="Api\AIMPImageDrawMode.cs" />
+    <Compile Include="Api\AIMPImageFormat.cs" />
+    <Compile Include="Api\AIMPMenuItemPropId.cs" />
+    <Compile Include="Api\AIMPMenuItemStyle.cs" />
+    <Compile Include="Api\AIMPMessage.cs" />
+    <Compile Include="Api\AIMPOptionsDialogNotification.cs" />
+    <Compile Include="Api\AIMPPlaybackQueueItemPropId.cs" />
+    <Compile Include="Api\AIMPPlaybackQueuePosition.cs" />
+    <Compile Include="Api\AIMPPlaylistAddFlags.cs" />
+    <Compile Include="Api\AIMPPlaylistCloseFlags.cs" />
+    <Compile Include="Api\AIMPPlaylistCompareCallback.cs" />
+    <Compile Include="Api\AIMPPlaylistDeleteCallback.cs" />
+    <Compile Include="Api\AIMPPlaylistDeleteFlags.cs" />
+    <Compile Include="Api\AIMPPlaylistGetFilesFlags.cs" />
+    <Compile Include="Api\AIMPPlaylistGroupPropId.cs" />
+    <Compile Include="Api\AIMPPlaylistItemPropId.cs" />
+    <Compile Include="Api\AIMPPlaylistNotifications.cs" />
+    <Compile Include="Api\AIMPPlaylistPropId.cs" />
+    <Compile Include="Api\AIMPPlaylistReloadMode.cs" />
+    <Compile Include="Api\AIMPPlaylistSortMode.cs" />
+    <Compile Include="Api\AIMPPluginCategories.cs" />
+    <Compile Include="Api\AIMPPluginInfo.cs" />
+    <Compile Include="Api\AIMPPropertylistCustomPropid.cs" />
+    <Compile Include="Api\AIMPRemoteAccess.cs" />
+    <Compile Include="Api\AIMPRemoteAccessNotify.cs" />
+    <Compile Include="Api\AIMPRemoteAccessProperty.cs" />
+    <Compile Include="Api\AIMPSchedulerEvent.cs" />
+    <Compile Include="Api\AIMPSchedulerEventPropId.cs" />
+    <Compile Include="Api\AIMPServiceAlbumArtFlags.cs" />
+    <Compile Include="Api\AIMPServiceAlbumArtPropId.cs" />
+    <Compile Include="Api\AIMPServiceAlbumArtReceiveCallback.cs" />
+    <Compile Include="Api\AIMPServiceFileFormatsCategory.cs" />
+    <Compile Include="Api\AIMPServiceFileinfoFlags.cs" />
+    <Compile Include="Api\AIMPServiceFilestreamingFlags.cs" />
+    <Compile Include="Api\AIMPServiceFileuriFlags.cs" />
+    <Compile Include="Api\AIMPServicePlayerPlayFlags.cs" />
+    <Compile Include="Api\AIMPServicePlayerPropId.cs" />
+    <Compile Include="Api\AIMPServiceShutdownFlags.cs" />
+    <Compile Include="Api\AIMPServiceSkinManagerPropId.cs" />
+    <Compile Include="Api\AIMPShutdownEventActions.cs" />
+    <Compile Include="Api\AIMPShutdownEventSourceEvent.cs" />
+    <Compile Include="Api\AIMPSkinInfoPropId.cs" />
+    <Compile Include="Api\AIMPSkinManagerInstallFlags.cs" />
+    <Compile Include="Api\AIMPStreamSeekMode.cs" />
+    <Compile Include="Api\AIMPStringCase.cs" />
+    <Compile Include="Api\AIMPStringFindFlags.cs" />
+    <Compile Include="Api\AIMPSystemNotification.cs" />
+    <Compile Include="Api\AIMPTaskCancelFlags.cs" />
+    <Compile Include="Api\AIMPTaskPriority.cs" />
+    <Compile Include="Api\AIMPUiBaseButtonedEditPropId.cs" />
+    <Compile Include="Api\AIMPUiBaseEditPropId.cs" />
+    <Compile Include="Api\AIMPUiBbcBoxPropId.cs" />
+    <Compile Include="Api\AIMPUiBevelPropId.cs" />
+    <Compile Include="Api\AIMPUiBorder.cs" />
+    <Compile Include="Api\AIMPUiBorderIcons.cs" />
+    <Compile Include="Api\AIMPUiBorderStyle.cs" />
+    <Compile Include="Api\AIMPUiBrandBoxPropId.cs" />
+    <Compile Include="Api\AIMPUiBrowseFolderFlags.cs" />
+    <Compile Include="Api\AIMPUiButtonPropId.cs" />
+    <Compile Include="Api\AIMPUiButtonStyle.cs" />
+    <Compile Include="Api\AIMPUiCategoryPropId.cs" />
+    <Compile Include="Api\AIMPUiCheckBoxPropId.cs" />
+    <Compile Include="Api\AIMPUiCheckComboBoxPropId.cs" />
+    <Compile Include="Api\AIMPUiComboBoxPropId.cs" />
+    <Compile Include="Api\AIMPUiControlAlignment.cs" />
+    <Compile Include="Api\AIMPUiControlPlacement.cs" />
+    <Compile Include="Api\AIMPUiControlPlacementConstraints.cs" />
+    <Compile Include="Api\AIMPUiControlPropId.cs" />
+    <Compile Include="Api\AIMPUiCreateFormFlags.cs" />
+    <Compile Include="Api\AIMPUiEditButtonPropId.cs" />
+    <Compile Include="Api\AIMPUiEditMask.cs" />
+    <Compile Include="Api\AIMPUiEditPropId.cs" />
+    <Compile Include="Api\AIMPUiFontStyles.cs" />
+    <Compile Include="Api\AIMPUiFormPropId.cs" />
+    <Compile Include="Api\AIMPUiGroupBoxPropId.cs" />
+    <Compile Include="Api\AIMPUiImageComboBoxPropId.cs" />
+    <Compile Include="Api\AIMPUiImagePropId.cs" />
+    <Compile Include="Api\AIMPUiKeyModifiers.cs" />
+    <Compile Include="Api\AIMPUiLabelPropId.cs" />
+    <Compile Include="Api\AIMPUiMemoPropId.cs" />
+    <Compile Include="Api\AIMPUiModalResult.cs" />
+    <Compile Include="Api\AIMPUiMouseButton.cs" />
+    <Compile Include="Api\AIMPUiPageControlPropId.cs" />
+    <Compile Include="Api\AIMPUiPanelPropId.cs" />
+    <Compile Include="Api\AIMPUiProgressBarPropId.cs" />
+    <Compile Include="Api\AIMPUiProgressDialogPropId.cs" />
+    <Compile Include="Api\AIMPUiScrollBoxPropId.cs" />
+    <Compile Include="Api\AIMPUiSliderPropId.cs" />
+    <Compile Include="Api\AIMPUiSpinEditPropId.cs" />
+    <Compile Include="Api\AIMPUiSplitterPropId.cs" />
+    <Compile Include="Api\AIMPUiTabControlPropId.cs" />
+    <Compile Include="Api\AIMPUiTabSheetPropId.cs" />
+    <Compile Include="Api\AIMPUiTextAlignment.cs" />
+    <Compile Include="Api\AIMPUiTextVerticalAlignment.cs" />
+    <Compile Include="Api\AIMPUiTimeEditPropId.cs" />
+    <Compile Include="Api\AIMPUiTreeListColumnPropId.cs" />
+    <Compile Include="Api\AIMPUiTreeListGridLines.cs" />
+    <Compile Include="Api\AIMPUiTreeListGroupPropId.cs" />
+    <Compile Include="Api\AIMPUiTreeListInsertPosition.cs" />
+    <Compile Include="Api\AIMPUiTreeListNodeGet.cs" />
+    <Compile Include="Api\AIMPUiTreeListNodePropId.cs" />
+    <Compile Include="Api\AIMPUiTreeListPropId.cs" />
+    <Compile Include="Api\AIMPUiTreeListSorting.cs" />
+    <Compile Include="Api\AIMPUiValidationLabelPropId.cs" />
+    <Compile Include="Api\AIMPUiWinControlPropId.cs" />
+    <Compile Include="Api\AIMPVirtualFilePropId.cs" />
+    <Compile Include="Api\AIMPVisual.cs" />
+    <Compile Include="Api\AIMPVisualClickButton.cs" />
+    <Compile Include="Api\AIMPVisualData.cs" />
+    <Compile Include="Api\AIMPVisualFlags.cs" />
+    <Compile Include="Api\AIMPWindowMessage.cs" />
+    <Compile Include="Api\IAIMPAction.cs" />
+    <Compile Include="Api\IAIMPActionEvent.cs" />
+    <Compile Include="Api\IAIMPAudioDecoder.cs" />
+    <Compile Include="Api\IAIMPConfig.cs" />
+    <Compile Include="Api\IAIMPCore.cs" />
+    <Compile Include="Api\IAIMPEqualizerPreset.cs" />
+    <Compile Include="Api\IAIMPErrorInfo.cs" />
+    <Compile Include="Api\IAIMPExtensionAlbumArtCatalog.cs" />
+    <Compile Include="Api\IAIMPExtensionAlbumArtCatalog2.cs" />
+    <Compile Include="Api\IAIMPExtensionAlbumArtProvider.cs" />
+    <Compile Include="Api\IAIMPExtensionAlbumArtProvider2.cs" />
+    <Compile Include="Api\IAIMPExtensionAudioDecoder.cs" />
+    <Compile Include="Api\IAIMPExtensionAudioDecoderOld.cs" />
+    <Compile Include="Api\IAIMPExtensionCustomVisualization.cs" />
+    <Compile Include="Api\IAIMPExtensionEmbeddedVisualization.cs" />
+    <Compile Include="Api\IAIMPExtensionFileExpander.cs" />
+    <Compile Include="Api\IAIMPExtensionFileFormat.cs" />
+    <Compile Include="Api\IAIMPExtensionFileInfoProvider.cs" />
+    <Compile Include="Api\IAIMPExtensionFileInfoProviderEx.cs" />
+    <Compile Include="Api\IAIMPExtensionPlaybackQueue.cs" />
+    <Compile Include="Api\IAIMPExtensionPlayerHook.cs" />
+    <Compile Include="Api\IAIMPExtensionPlaylistManagerListener.cs" />
+    <Compile Include="Api\IAIMPExternalSettingsDialog.cs" />
+    <Compile Include="Api\IAIMPFileInfo.cs" />
+    <Compile Include="Api\IAIMPFileStream.cs" />
+    <Compile Include="Api\IAIMPFileTag.cs" />
+    <Compile Include="Api\IAIMPFileTagEditor.cs" />
+    <Compile Include="Api\IAIMPHashCode.cs" />
+    <Compile Include="Api\IAIMPHttpClientEvents.cs" />
+    <Compile Include="Api\IAIMPHttpClientEvents2.cs" />
+    <Compile Include="Api\IAIMPImage.cs" />
+    <Compile Include="Api\IAIMPImage2.cs" />
+    <Compile Include="Api\IAIMPImageContainer.cs" />
+    <Compile Include="Api\IAIMPMemoryStream.cs" />
+    <Compile Include="Api\IAIMPMenuItem.cs" />
+    <Compile Include="Api\IAIMPMessageHook.cs" />
+    <Compile Include="Api\IAIMPObjectList.cs" />
+    <Compile Include="Api\IAIMPOptionsDialogFrame.cs" />
+    <Compile Include="Api\IAIMPOptionsDialogFrameKeyboardHelper.cs" />
+    <Compile Include="Api\IAIMPPlaybackQueueItem.cs" />
+    <Compile Include="Api\IAIMPPlaylist.cs" />
+    <Compile Include="Api\IAIMPPlaylistGroup.cs" />
+    <Compile Include="Api\IAIMPPlaylistItem.cs" />
+    <Compile Include="Api\IAIMPPlaylistListener.cs" />
+    <Compile Include="Api\IAIMPPlaylistListener2.cs" />
+    <Compile Include="Api\IAIMPPlaylistQueue.cs" />
+    <Compile Include="Api\IAIMPPlaylistQueue2.cs" />
+    <Compile Include="Api\IAIMPPlaylistQueueListener.cs" />
+    <Compile Include="Api\IAIMPPlugin.cs" />
+    <Compile Include="Api\IAIMPProgressCallback.cs" />
+    <Compile Include="Api\IAIMPPropertyList.cs" />
+    <Compile Include="Api\IAIMPPropertyList2.cs" />
+    <Compile Include="Api\IAIMPSchedulerEvent.cs" />
+    <Compile Include="Api\IAIMPServiceActionManager.cs" />
+    <Compile Include="Api\IAIMPServiceAlbumArt.cs" />
+    <Compile Include="Api\IAIMPServiceAlbumArtCache.cs" />
+    <Compile Include="Api\IAIMPServiceAttrExtendable.cs" />
+    <Compile Include="Api\IAIMPServiceAttrObjects.cs" />
+    <Compile Include="Api\IAIMPServiceAudioDecoders.cs" />
+    <Compile Include="Api\IAIMPServiceConfig.cs" />
+    <Compile Include="Api\IAIMPServiceConnectionSettings.cs" />
+    <Compile Include="Api\IAIMPServiceFileFormats.cs" />
+    <Compile Include="Api\IAIMPServiceFileInfo.cs" />
+    <Compile Include="Api\IAIMPServiceFileInfoFormatter.cs" />
+    <Compile Include="Api\IAIMPServiceFileInfoFormatterUtils.cs" />
+    <Compile Include="Api\IAIMPServiceFileManager.cs" />
+    <Compile Include="Api\IAIMPServiceFileStreaming.cs" />
+    <Compile Include="Api\IAIMPServiceFileTagEditor.cs" />
+    <Compile Include="Api\IAIMPServiceFileURI.cs" />
+    <Compile Include="Api\IAIMPServiceHttpClient.cs" />
+    <Compile Include="Api\IAIMPServiceHttpClient2.cs" />
+    <Compile Include="Api\IAIMPServiceMenuManager.cs" />
+    <Compile Include="Api\IAIMPServiceMessageDispatcher.cs" />
+    <Compile Include="Api\IAIMPServiceMui.cs" />
+    <Compile Include="Api\IAIMPServiceOptionsDialog.cs" />
+    <Compile Include="Api\IAIMPServicePlaybackQueue.cs" />
+    <Compile Include="Api\IAIMPServicePlayer.cs" />
+    <Compile Include="Api\IAIMPServicePlayerEqualizer.cs" />
+    <Compile Include="Api\IAIMPServicePlayerEqualizerPresets.cs" />
+    <Compile Include="Api\IAIMPServicePlaylistManager.cs" />
+    <Compile Include="Api\IAIMPServiceScheduler.cs" />
+    <Compile Include="Api\IAIMPServiceShutdown.cs" />
+    <Compile Include="Api\IAIMPServiceSkinsManager.cs" />
+    <Compile Include="Api\IAIMPServiceSynchronizer.cs" />
+    <Compile Include="Api\IAIMPServiceThreadPool.cs" />
+    <Compile Include="Api\IAIMPServiceUi.cs" />
+    <Compile Include="Api\IAIMPServiceVersionInfo.cs" />
+    <Compile Include="Api\IAIMPServiceVisualizations.cs" />
+    <Compile Include="Api\IAIMPSkinInfo.cs" />
+    <Compile Include="Api\IAIMPStream.cs" />
+    <Compile Include="Api\IAIMPString.cs" />
+    <Compile Include="Api\IAIMPTask.cs" />
+    <Compile Include="Api\IAIMPTaskOwner.cs" />
+    <Compile Include="Api\IAIMPTaskPriority.cs" />
+    <Compile Include="Api\IAIMPUiBaseButtonnedEdit.cs" />
+    <Compile Include="Api\IAIMPUiBaseComboBox.cs" />
+    <Compile Include="Api\IAIMPUiBaseEdit.cs" />
+    <Compile Include="Api\IAIMPUiBbcBox.cs" />
+    <Compile Include="Api\IAIMPUiBevel.cs" />
+    <Compile Include="Api\IAIMPUiBrandBox.cs" />
+    <Compile Include="Api\IAIMPUiBrowseFolderDialog.cs" />
+    <Compile Include="Api\IAIMPUiButton.cs" />
+    <Compile Include="Api\IAIMPUiCategory.cs" />
+    <Compile Include="Api\IAIMPUiChangeEvents.cs" />
+    <Compile Include="Api\IAIMPUiCheckBox.cs" />
+    <Compile Include="Api\IAIMPUiCheckComboBox.cs" />
+    <Compile Include="Api\IAIMPUiComboBox.cs" />
+    <Compile Include="Api\IAIMPUiControl.cs" />
+    <Compile Include="Api\IAIMPUiDrawEvents.cs" />
+    <Compile Include="Api\IAIMPUiEdit.cs" />
+    <Compile Include="Api\IAIMPUiEditButton.cs" />
+    <Compile Include="Api\IAIMPUiFileDialogs.cs" />
+    <Compile Include="Api\IAIMPUiForm.cs" />
+    <Compile Include="Api\IAIMPUiFormEvents.cs" />
+    <Compile Include="Api\IAIMPUiGroupBox.cs" />
+    <Compile Include="Api\IAIMPUiImage.cs" />
+    <Compile Include="Api\IAIMPUiImageComboBox.cs" />
+    <Compile Include="Api\IAIMPUiImageList.cs" />
+    <Compile Include="Api\IAIMPUiInputDialog.cs" />
+    <Compile Include="Api\IAIMPUiInputDialogEvents.cs" />
+    <Compile Include="Api\IAIMPUiKeyboardEvents.cs" />
+    <Compile Include="Api\IAIMPUiLabel.cs" />
+    <Compile Include="Api\IAIMPUiMemo.cs" />
+    <Compile Include="Api\IAIMPUiMenuItem.cs" />
+    <Compile Include="Api\IAIMPUiMessageDialog.cs" />
+    <Compile Include="Api\IAIMPUiMouseEvents.cs" />
+    <Compile Include="Api\IAIMPUiMouseWheelEvents.cs" />
+    <Compile Include="Api\IAIMPUiPageControl.cs" />
+    <Compile Include="Api\IAIMPUiPageControlEvents.cs" />
+    <Compile Include="Api\IAIMPUiPaintBox.cs" />
+    <Compile Include="Api\IAIMPUiPanel.cs" />
+    <Compile Include="Api\IAIMPUiPlacementEvents.cs" />
+    <Compile Include="Api\IAIMPUiPopupMenu.cs" />
+    <Compile Include="Api\IAIMPUiPopupMenuEvents.cs" />
+    <Compile Include="Api\IAIMPUiProgressBar.cs" />
+    <Compile Include="Api\IAIMPUiProgressDialog.cs" />
+    <Compile Include="Api\IAIMPUiProgressDialogEvents.cs" />
+    <Compile Include="Api\IAIMPUiRadioBox.cs" />
+    <Compile Include="Api\IAIMPUiScrollBox.cs" />
+    <Compile Include="Api\IAIMPUiSlider.cs" />
+    <Compile Include="Api\IAIMPUiSpinEdit.cs" />
+    <Compile Include="Api\IAIMPUiSplitter.cs" />
+    <Compile Include="Api\IAIMPUiTabControl.cs" />
+    <Compile Include="Api\IAIMPUiTabControlEvents.cs" />
+    <Compile Include="Api\IAIMPUiTabSheet.cs" />
+    <Compile Include="Api\IAIMPUiTimeEdit.cs" />
+    <Compile Include="Api\IAIMPUiTreeList.cs" />
+    <Compile Include="Api\IAIMPUiTreeListColumn.cs" />
+    <Compile Include="Api\IAIMPUiTreeListCustomDrawEvents.cs" />
+    <Compile Include="Api\IAIMPUiTreeListDragSortingEvents.cs" />
+    <Compile Include="Api\IAIMPUiTreeListEvents.cs" />
+    <Compile Include="Api\IAIMPUiTreeListGroup.cs" />
+    <Compile Include="Api\IAIMPUiTreeListInplaceEditingEvents.cs" />
+    <Compile Include="Api\IAIMPUiTreeListNode.cs" />
+    <Compile Include="Api\IAIMPUiValidationLabel.cs" />
+    <Compile Include="Api\IAIMPUiWinControl.cs" />
+    <Compile Include="Api\IAIMPUiWndProcEvents.cs" />
+    <Compile Include="Api\IAIMPVirtualFile.cs" />
+    <Compile Include="Api\POINT.cs" />
+    <Compile Include="Api\RECT.cs" />
+    <Compile Include="Api\RGBQUAD.cs" />
+    <Compile Include="Api\SIZE.cs" />
+    <Compile Include="Api\TAIMPRemoteFileInfo.cs" />
+    <Compile Include="EntryPoint.cs" />
     <Compile Include="LyricsSource.cs" />
     <Compile Include="LyricsWindow.xaml.cs">
       <DependentUpon>LyricsWindow.xaml</DependentUpon>
@@ -81,11 +381,6 @@
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Settings\OptionsFrame.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CopyPlugin.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Page Include="LyricsWindow.xaml">
@@ -109,18 +404,32 @@
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AimpSDK">
-      <Version>4.60.2144.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="aimp_dotnet.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call CopyPlugin.bat</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <DllExportIdent>30DBA973-570E-4574-B7C8-2964D03E8CB5</DllExportIdent>
+    <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
+    <DllExportNamespace>RGiesecke.DllExport</DllExportNamespace>
+    <DllExportDDNSCecil>true</DllExportDDNSCecil>
+    <PlatformTarget>x86</PlatformTarget>
+    <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
+    <DllExportGenExpLib>false</DllExportGenExpLib>
+    <DllExportOurILAsm>false</DllExportOurILAsm>
+    <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
+    <DllExportTimeout>30000</DllExportTimeout>
+    <DllExportPeCheck>2</DllExportPeCheck>
+  </PropertyGroup>
+  <ImportGroup Label=".NET DllExport">
+    <Import Project="$(SolutionDir)packages\DllExport.1.6.5\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.6.5\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
+  </ImportGroup>
+  <Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('$(SolutionDir)DllExport.bat')" Text="DllExport.bat is not found. Path: '$(SolutionDir)' - https://github.com/3F/DllExport" />
+    <Exec Condition="('$(DllExportModImported)' != 'true' Or !Exists('$(SolutionDir)packages\DllExport.1.6.5\tools\net.r_eg.DllExport.targets')) And Exists('$(SolutionDir)DllExport.bat')" Command="DllExport.bat  -action Restore" WorkingDirectory="$(SolutionDir)" />
+  </Target>
+  <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
+    <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
+  </Target>
 </Project>

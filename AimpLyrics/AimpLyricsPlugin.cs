@@ -1,106 +1,172 @@
-﻿using AIMP.SDK;
-using AIMP.SDK.MenuManager;
+﻿using Aimp4.Api;
 using AimpLyrics.Settings;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Input;
 
-#nullable enable
 namespace AimpLyrics
 {
-    [AimpPlugin(Name, "Andrey Arekhva", Version, AimpPluginType = AimpPluginType.Addons, Description = Description)]
-    public class AimpLyricsPlugin : AimpPlugin
+    public class AimpLyricsPlugin : IAIMPPlugin
     {
         public const string Name = "AimpLyrics";
-        public const string Version = "1.0.4";
+        public const string Author = "Andrey Arekhva";
+        public const string Version = "1.1.0";
         public const string Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google";
 
-        private LyricsWindow? _lyricsWindow;
-        private AimpMessageHook? _hook;
-        private ILyricsPluginSettings? _settings;
+        private LyricsWindow _lyricsWindow;
+        private AimpMessageHook _hook;
+        private ILyricsPluginSettings _settings;
 
-        public override void Initialize()
+        public static IAIMPCore Core { get; private set; }
+
+        public string InfoGet(AIMPPluginInfo info) =>
+            info switch
+            {
+                AIMPPluginInfo.Author => Author,
+                AIMPPluginInfo.Name => Name,
+                AIMPPluginInfo.ShortDescription => Description,
+                _ => string.Empty,
+            };
+
+        public AIMPPluginCategories InfoGetCategories() => AIMPPluginCategories.Addons;
+
+        public void Initialize(IAIMPCore core)
         {
-            if (!AddMenuItem())
-            {
-                Trace.WriteLine("Cannot create menu item");
-                return;
-            }
+            Core = core;
 
-            if (!RegisterHook())
-            {
-                Trace.WriteLine("Cannot register message hook");
-                return;
-            }
+            AddMenuItem();
+            RegisterHook();
 
-            _settings = new AimpLyricsPluginSettings(Player.ServiceConfig);
-            if (_settings.OpenWindowOnInitializing && _hook != null)
+            _lyricsWindow = new LyricsWindow();
+            _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
+
+            _settings = new AimpLyricsPluginSettings();
+
+            if (_settings.OpenWindowOnInitializing)
                 _hook.PlayerLoaded += OnPlayerLoaded;
-
-            _lyricsWindow = new LyricsWindow(Player, _hook!);
 
             if (_settings.RestoreWindowHeight)
                 _lyricsWindow.Height = _settings.WindowHeight;
 
-            if (!RegisterOptions())
-            {
-                Trace.WriteLine("Cannot register options frame");
-                return;
-            }
+            RegisterOptions();
 
             SetUpLogger();
 
-            Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Assembly.GetExecutingAssembly().GetName().Version}");
+            Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Version}-beta");
         }
 
-        private bool AddMenuItem()
+        private void AddMenuItem()
         {
-            if (Player.MenuManager.CreateMenuItem(out IAimpMenuItem menuItem) != AimpActionResult.OK)
-                return false;
+            IAIMPMenuItem menuItem = null;
+            IAIMPAction action = null;
+            IAIMPString name = null;
+            IAIMPString id = null;
+            IAIMPString groupName = null;
+            IAIMPMenuItem parentMenu = null;
 
-            var action = Player.ActionManager.CreateAction();
-            action.Id = "aimp.lyrics.open.window";
-            action.Name = "Open Lyrics";
-            action.GroupName = "Lyrics";
-            action.DefaultLocalHotKey = Player.ActionManager.MakeHotkey(ModifierKeys.Shift, (uint)Keys.L);
-            action.DefaultGlobalHotKey = Player.ActionManager.MakeHotkey(ModifierKeys.Control | ModifierKeys.Alt, (uint)Keys.L);
-            action.OnExecute += (sender, args) => ShowLyricsWindow();
+            try
+            {
+                menuItem = Core.CreateObject<IAIMPMenuItem>();
+                action = Core.CreateObject<IAIMPAction>();
 
-            menuItem.Action = action;
+                name = Core.CreateString("Open Lyrics");
+                action.SetProperty(AIMPActionPropId.Name, name);
 
-            if (Player.ActionManager.Register(action) != AimpActionResult.OK)
-                return false;
+                id = Core.CreateString("aimp.lyrics.open.window");
+                action.SetProperty(AIMPActionPropId.Id, id);
 
-            return Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menuItem) == AimpActionResult.OK;
+                groupName = Core.CreateString("Lyrics");
+                action.SetProperty(AIMPActionPropId.GroupName, groupName);
+
+                var actionManager = Core.GetService<IAIMPServiceActionManager>();
+
+                int hotkey = actionManager.MakeHotkey(AIMPActionHotKeyModifiers.Shift, (ushort)Keys.L);
+                action.SetValueAsInt32((int)AIMPActionPropId.DefaultLocalHotKey, hotkey);
+
+                int globalHotkey = actionManager.MakeHotkey(AIMPActionHotKeyModifiers.Ctrl | AIMPActionHotKeyModifiers.Alt, (ushort)Keys.L);
+                action.SetValueAsInt32((int)AIMPActionPropId.DefaultGlobalHotKey, globalHotkey);
+
+                var actionEvent = new AimpActionEvent();
+                actionEvent.Execute += (data) => ShowLyricsWindow();
+                action.SetProperty(AIMPActionPropId.Event, actionEvent);
+
+                menuItem.SetValueAsObject(AIMPMenuItemPropId.Action, action);
+
+                var menuManager = Core.GetService<IAIMPServiceMenuManager>();
+                parentMenu = menuManager.GetBuiltIn(AIMPBuildInMenu.CommonUtilities);
+                menuItem.SetValueAsObject(AIMPMenuItemPropId.Parent, parentMenu);
+
+                menuItem.SetValueAsInt32(AIMPMenuItemPropId.Shortcut, hotkey);
+
+                Core.RegisterExtension<IAIMPServiceActionManager>(action);
+                Core.RegisterExtension<IAIMPServiceMenuManager>(menuItem);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Cannot create menu item: {ex}");
+                throw;
+            }
+            finally
+            {
+                menuItem?.ReleaseComObject();
+                action?.ReleaseComObject();
+                name?.ReleaseComObject();
+                id?.ReleaseComObject();
+                groupName?.ReleaseComObject();
+                parentMenu?.ReleaseComObject();
+            }
         }
 
-        private bool RegisterHook()
+        private void RegisterHook()
         {
-            _hook = new AimpMessageHook();
-            return Player.ServiceMessageDispatcher.Hook(_hook) == AimpActionResult.OK;
+            try
+            {
+                var messageDispatcher = Core.GetService<IAIMPServiceMessageDispatcher>();
+                var hook = new AimpMessageHook();
+
+                messageDispatcher.Hook(hook);
+                _hook = hook;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Cannot register message hook: {ex}");
+                throw;
+            }
         }
 
         private void OnPlayerLoaded()
         {
-            if (_hook is null)
-                return;
-
             ShowLyricsWindow();
             _hook.PlayerLoaded -= OnPlayerLoaded;
         }
 
         private void ShowLyricsWindow()
         {
-            _lyricsWindow?.Show();
-            _lyricsWindow?.Activate();
+            if (_lyricsWindow is null)
+                return;
+
+            _lyricsWindow.Show();
+            if (_lyricsWindow.WindowState == WindowState.Minimized)
+                _lyricsWindow.WindowState = WindowState.Normal;
+            _lyricsWindow.Activate();
         }
 
-        private bool RegisterOptions()
+        private void RegisterOptions()
         {
-            var optionsFrame = new OptionsFrame(Player);
-            return Player.Core.RegisterExtension(optionsFrame) == AimpActionResult.OK;
+            try
+            {
+                var optionsFrame = new OptionsFrame();
+                Core.RegisterExtension<IAIMPServiceOptionsDialog>(optionsFrame);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Cannot register options frame: {ex}");
+                throw;
+            }
         }
 
         private void SetUpLogger()
@@ -111,13 +177,28 @@ namespace AimpLyrics
             Trace.AutoFlush = true;
         }
 
-        public override void Dispose()
+        public void SystemNotification(AIMPSystemNotification notification, object data)
+        {
+            data?.ReleaseComObject();
+        }
+
+        public void FinalizePlugin()
         {
             if (_settings?.RestoreWindowHeight == true && _lyricsWindow != null)
                 _settings.WindowHeight = (int)_lyricsWindow.ActualHeight;
 
+            if (_hook != null)
+            {
+                _hook.FileInfoReceived -= _lyricsWindow.UpdateSongInfo;
+
+                var messageDispatcher = Core.GetService<IAIMPServiceMessageDispatcher>();
+                messageDispatcher.Unhook(_hook);
+            }
+
             _lyricsWindow?.Close();
-            Player.ServiceMessageDispatcher.Unhook(_hook);
+            Marshal.FinalReleaseComObject(Core);
+
+            Trace.WriteLine("Finalized AIMP Lyrics Plugin");
             Trace.Close();
         }
     }

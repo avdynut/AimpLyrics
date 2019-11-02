@@ -1,33 +1,28 @@
-﻿using AIMP.SDK;
-using AIMP.SDK.MessageDispatcher;
+﻿using Aimp4.Api;
 using System;
 
-#nullable enable
 namespace AimpLyrics
 {
-    public class AimpMessageHook : IAimpMessageHook
+    public class AimpMessageHook : IAIMPMessageHook
     {
-        public event Action? FileInfoReceived;
-        public event Action? PlayerStopped;
-        public event Action? PlayerLoaded;
+        public event Action FileInfoReceived;
+        public event Action PlayerStopped;
+        public event Action PlayerLoaded;
 
-        public AimpActionResult CoreMessage(AimpCoreMessageType message, int param1, int param2)
+        public void CoreMessage(AIMPMessage message, int param1, IntPtr param2, ref IntPtr result)
         {
             switch (message)
             {
-                case AimpCoreMessageType.AIMP_MSG_EVENT_PLAYABLE_FILE_INFO:
+                case AIMPMessage.EventPlayableFileInfo:
                     FileInfoReceived?.Invoke();
                     break;
-                case AimpCoreMessageType.AIMP_MSG_EVENT_PLAYER_STATE:
-                    if (param1 == 0)
-                        PlayerStopped?.Invoke();
+                case AIMPMessage.EventPlayerState when param1 == 0:
+                    PlayerStopped?.Invoke();
                     break;
-                case AimpCoreMessageType.AIMP_MSG_EVENT_LOADED:
+                case AIMPMessage.EventLoaded:
                     PlayerLoaded?.Invoke();
                     break;
             }
-
-            return AimpActionResult.OK;
         }
     }
 }

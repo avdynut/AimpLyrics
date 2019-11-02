@@ -1,27 +1,26 @@
-﻿using AIMP.SDK.Options;
-using AIMP.SDK.Player;
+﻿using Aimp4.Api;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
-#nullable enable
 namespace AimpLyrics.Settings
 {
-    public class OptionsFrame : IAimpOptionsDialogFrame, IAimpOptionsDialogFrameKeyboardHelper
+    public class OptionsFrame : IAIMPOptionsDialogFrame, IAIMPOptionsDialogFrameKeyboardHelper
     {
-        private OptionsForm? _optionsForm;
-        private readonly IAimpServiceOptionsDialog _optionsService;
-        private readonly ILyricsPluginSettings _settings;
+        private OptionsForm _optionsForm;
 
-        public OptionsFrame(IAimpPlayer player)
+        public OptionsFrame()
         {
-            _optionsService = player.ServiceOptionsDialog;
-            _settings = new AimpLyricsPluginSettings(player.ServiceConfig);
-
             Application.EnableVisualStyles();
         }
 
-        public string GetName() => "Lyrics";
+        public IAIMPString GetName()
+        {
+            var aimpString = AimpLyricsPlugin.Core.CreateString("Lyrics");
+            Task.Delay(200).ContinueWith(t => aimpString?.ReleaseComObject());  // костыль, да не будет утечки памяти, аминь
+            return aimpString;
+        }
 
         public IntPtr CreateFrame(IntPtr parentWindow)
         {
@@ -41,7 +40,8 @@ namespace AimpLyrics.Settings
 
         private void OnCheckBoxClick(object sender, EventArgs e)
         {
-            _optionsService.FrameModified(this);
+            var optionsService = AimpLyricsPlugin.Core.GetService<IAIMPServiceOptionsDialog>();
+            optionsService.FrameModified(this);
         }
 
         public void DestroyFrame()
@@ -50,47 +50,58 @@ namespace AimpLyrics.Settings
             _optionsForm = null;
         }
 
-        public void Notification(OptionsDialogFrameNotificationType notificationType)
+        public void Notification(AIMPOptionsDialogNotification notificationType)
         {
+            var settings = new AimpLyricsPluginSettings();
+
             switch (notificationType)
             {
-                case OptionsDialogFrameNotificationType.AIMP_SERVICE_OPTIONSDIALOG_NOTIFICATION_LOAD:
+                case AIMPOptionsDialogNotification.Load:
                     if (_optionsForm != null)
                     {
-                        _optionsForm.OpenWindowOnInitCheckBox.Checked = _settings.OpenWindowOnInitializing;
-                        _optionsForm.RestoreWindowHeightCheckBox.Checked = _settings.RestoreWindowHeight;
+                        _optionsForm.OpenWindowOnInitCheckBox.Checked = settings.OpenWindowOnInitializing;
+                        _optionsForm.RestoreWindowHeightCheckBox.Checked = settings.RestoreWindowHeight;
                     }
                     break;
 
-                case OptionsDialogFrameNotificationType.AIMP_SERVICE_OPTIONSDIALOG_NOTIFICATION_LOCALIZATION:
+                case AIMPOptionsDialogNotification.Localization:
                     // set localization
                     break;
 
-                case OptionsDialogFrameNotificationType.AIMP_SERVICE_OPTIONSDIALOG_NOTIFICATION_SAVE:
+                case AIMPOptionsDialogNotification.Save:
                     if (_optionsForm != null)
                     {
-                        _settings.OpenWindowOnInitializing = _optionsForm.OpenWindowOnInitCheckBox.Checked;
-                        _settings.RestoreWindowHeight = _optionsForm.RestoreWindowHeightCheckBox.Checked;
+                        settings.OpenWindowOnInitializing = _optionsForm.OpenWindowOnInitCheckBox.Checked;
+                        settings.RestoreWindowHeight = _optionsForm.RestoreWindowHeightCheckBox.Checked;
                     }
                     break;
 
-                case OptionsDialogFrameNotificationType.AIMP_SERVICE_OPTIONSDIALOG_NOTIFICATION_CAN_SAVE:
+                case AIMPOptionsDialogNotification.CanSave:
                     break;
             }
         }
 
         #region IAimpOptionsDialogFrameKeyboardHelper
-        public bool DialogKey(int charCode)
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public bool DialogChar(char charCode, int unused)
         {
             return true;
         }
 
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public bool DialogKey(ushort charCode, int unused)
+        {
+            return true;
+        }
+
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public bool SelectNextControl([MarshalAs(UnmanagedType.Bool)] bool findForward, [MarshalAs(UnmanagedType.Bool)] bool checkTabStop)
+        {
+            return true;
+        }
+
+        [return: MarshalAs(UnmanagedType.Bool)]
         public bool SelectFirstControl()
-        {
-            return true;
-        }
-
-        public bool SelectNextControl(int findForward, int isTabKeyAction)
         {
             return true;
         }
