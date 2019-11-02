@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace AimpLyrics
@@ -13,7 +14,7 @@ namespace AimpLyrics
     {
         public const string Name = "AimpLyrics";
         public const string Author = "Andrey Arekhva";
-        public const string Version = "1.0.5";
+        public const string Version = "1.1.0";
         public const string Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google";
 
         private LyricsWindow _lyricsWindow;
@@ -145,8 +146,13 @@ namespace AimpLyrics
 
         private void ShowLyricsWindow()
         {
-            _lyricsWindow?.Show();
-            _lyricsWindow?.Activate();
+            if (_lyricsWindow is null)
+                return;
+
+            _lyricsWindow.Show();
+            if (_lyricsWindow.WindowState == WindowState.Minimized)
+                _lyricsWindow.WindowState = WindowState.Normal;
+            _lyricsWindow.Activate();
         }
 
         private void RegisterOptions()

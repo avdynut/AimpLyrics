@@ -75,12 +75,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ServiceFileTagEditor.cs" />
-    <Compile Include="ServiceMessageDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileInfo.cs" />
-    <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -90,11 +86,6 @@
       <Project>{0d69a5ae-7868-49f5-8777-97299ae22a0d}</Project>
       <Name>AimpLyrics</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AimpSDK">
-      <Version>4.60.2144.1</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
