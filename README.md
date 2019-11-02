@@ -12,7 +12,7 @@ Lyrics plugin for [AIMP music player](http://www.aimp.ru/).
 * edit font size
 * auto open lyrics window on player start
 
-The plugin is written on *C#* thanks to [AIMP DotNet SDK](https://github.com/martin211/aimp_dotnet).
+The plugin is written on *C#* via *COM Interop* thanks to [AIMP-net-api](https://github.com/antrv/AIMP-net-api).
 
 Please do not hesitate to contact me, if you have some questions or ideas.
 
