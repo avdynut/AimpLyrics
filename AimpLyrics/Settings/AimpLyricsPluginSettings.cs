@@ -1,8 +1,8 @@
 ﻿using Aimp4.Api;
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-#nullable enable
 namespace AimpLyrics.Settings
 {
     public class AimpLyricsPluginSettings : ILyricsPluginSettings
@@ -43,12 +43,12 @@ namespace AimpLyrics.Settings
             set => SetString(Convert.ToString(value));
         }
 
-        private readonly int _defaultWindowHeight = 600;
-        public int WindowHeight
+        private readonly double _defaultWindowHeight = 600;
+        public double WindowHeight
         {
             get
             {
-                int height = GetInt32();
+                double height = GetDouble();
 
                 if (height < 50 || height > 3000)
                 {
@@ -56,7 +56,7 @@ namespace AimpLyrics.Settings
                 }
                 return height;
             }
-            set => SetInt32(value);
+            set => SetDouble(value);
         }
 
         private IAIMPServiceConfig Config => AimpLyricsPlugin.Core.GetService<IAIMPServiceConfig>();
@@ -69,21 +69,45 @@ namespace AimpLyrics.Settings
 
         private string GetString([CallerMemberName] string key = "")
         {
+            string value = null;
             var aimpKeyPath = GetKeyPath(key);
-            var aimpValue = Config.GetValueAsString(aimpKeyPath);
-            string value = aimpValue.GetData();
 
-            aimpKeyPath?.ReleaseComObject();
-            aimpValue?.ReleaseComObject();
+            try
+            {
+                var aimpValue = Config.GetValueAsString(aimpKeyPath);
+                value = aimpValue.GetData();
+                aimpValue?.ReleaseComObject();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"GetString: {ex}");
+            }
+            finally
+            {
+                aimpKeyPath?.ReleaseComObject();
+            }
 
             return value;
         }
 
-        private int GetInt32([CallerMemberName] string key = "")
+        private double GetDouble([CallerMemberName] string key = "")
         {
+            double value = 0;
             var aimpKeyPath = GetKeyPath(key);
-            int value = Config.GetValueAsInt32(aimpKeyPath);
-            aimpKeyPath?.ReleaseComObject();
+
+            try
+            {
+                value = Config.GetValueAsFloat(aimpKeyPath);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"GetDouble: {ex}");
+            }
+            finally
+            {
+                aimpKeyPath?.ReleaseComObject();
+            }
+
             return value;
         }
 
@@ -98,10 +122,10 @@ namespace AimpLyrics.Settings
             aimpValue?.ReleaseComObject();
         }
 
-        private void SetInt32(int value, [CallerMemberName] string key = "")
+        private void SetDouble(double value, [CallerMemberName] string key = "")
         {
             var aimpKeyPath = GetKeyPath(key);
-            Config.SetValueAsInt32(aimpKeyPath, value);
+            Config.SetValueAsFloat(aimpKeyPath, value);
             aimpKeyPath?.ReleaseComObject();
         }
     }

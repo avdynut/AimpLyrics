@@ -13,7 +13,7 @@ namespace AimpLyrics
     {
         public const string Name = "AimpLyrics";
         public const string Author = "Andrey Arekhva";
-        public const string Version = "1.1.1";
+        public const string Version = "1.1.2";
         public const string Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google";
 
         private LyricsWindow _lyricsWindow;
@@ -35,27 +35,37 @@ namespace AimpLyrics
 
         public void Initialize(IAIMPCore core)
         {
-            Core = core;
+            try
+            {
+                Trace.WriteLine("Start Init");
 
-            AddMenuItem();
-            RegisterHook();
+                Core = core;
 
-            _lyricsWindow = new LyricsWindow();
-            _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
+                SetUpLogger();
 
-            _settings = new AimpLyricsPluginSettings();
+                AddMenuItem();
+                RegisterHook();
 
-            if (_settings.OpenWindowOnInitializing)
-                _hook.PlayerLoaded += OnPlayerLoaded;
+                _lyricsWindow = new LyricsWindow();
+                _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
 
-            if (_settings.RestoreWindowHeight)
-                _lyricsWindow.Height = _settings.WindowHeight;
+                _settings = new AimpLyricsPluginSettings();
 
-            RegisterOptions();
+                if (_settings.OpenWindowOnInitializing)
+                    _hook.PlayerLoaded += OnPlayerLoaded;
 
-            SetUpLogger();
+                if (_settings.RestoreWindowHeight)
+                    _lyricsWindow.Height = _settings.WindowHeight;
 
-            Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Version}-beta");
+                RegisterOptions();
+
+                Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Version}-beta");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Init error: {ex}");
+                throw;
+            }
         }
 
         private void AddMenuItem()
@@ -188,7 +198,7 @@ namespace AimpLyrics
         public void FinalizePlugin()
         {
             if (_settings?.RestoreWindowHeight == true && _lyricsWindow != null)
-                _settings.WindowHeight = (int)_lyricsWindow.ActualHeight;
+                _settings.WindowHeight = _lyricsWindow.ActualHeight;
 
             if (_hook != null)
             {
