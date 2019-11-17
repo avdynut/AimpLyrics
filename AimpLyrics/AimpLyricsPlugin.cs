@@ -72,7 +72,7 @@ namespace AimpLyrics
         {
             IAIMPMenuItem menuItem = null;
             IAIMPAction action = null;
-            IAIMPString name = null;
+            IAIMPString actionName = null;
             IAIMPString id = null;
             IAIMPString groupName = null;
             IAIMPMenuItem parentMenu = null;
@@ -82,13 +82,13 @@ namespace AimpLyrics
                 menuItem = Core.CreateObject<IAIMPMenuItem>();
                 action = Core.CreateObject<IAIMPAction>();
 
-                name = Core.CreateString("Open Lyrics");
-                action.SetProperty(AIMPActionPropId.Name, name);
+                actionName = Core.CreateString("Lyrics");
+                action.SetProperty(AIMPActionPropId.Name, actionName);
 
                 id = Core.CreateString("aimp.lyrics.open.window");
                 action.SetProperty(AIMPActionPropId.Id, id);
 
-                groupName = Core.CreateString("Lyrics");
+                groupName = Core.CreateString("Lyrics Plugin");
                 action.SetProperty(AIMPActionPropId.GroupName, groupName);
 
                 var actionManager = Core.GetService<IAIMPServiceActionManager>();
@@ -123,7 +123,7 @@ namespace AimpLyrics
             {
                 menuItem?.ReleaseComObject();
                 action?.ReleaseComObject();
-                name?.ReleaseComObject();
+                actionName?.ReleaseComObject();
                 id?.ReleaseComObject();
                 groupName?.ReleaseComObject();
                 parentMenu?.ReleaseComObject();
