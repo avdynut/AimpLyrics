@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Web;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace AimpLyrics
@@ -252,6 +253,21 @@ namespace AimpLyrics
         {
             _hideOnClosing = false;
             base.Close();
+        }
+
+        private void OnThemesComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                var theme = (e.AddedItems[0] as ComboBoxItem).Content;
+                var uri = new Uri($"pack://application:,,,/AimpLyrics;component/Themes/{theme}.xaml");
+                var resource = new ResourceDictionary() { Source = uri };
+                Resources.MergedDictionaries[0] = resource;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Cannot change theme: {ex}");
+            }
         }
     }
 }
