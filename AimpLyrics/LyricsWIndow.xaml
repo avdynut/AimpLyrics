@@ -1,6 +1,8 @@
 ﻿<Window x:Class="AimpLyrics.LyricsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:themes="clr-namespace:AimpLyrics.Themes"
         Title="Lyrics"
         SizeToContent="Width" MinWidth="280"
         Background="{DynamicResource BackgroundColorBrush}"
@@ -11,8 +13,14 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/Dark.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <ObjectDataProvider x:Key="Themes" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="themes:Theme"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
             <Color x:Key="OrangeColor">#FFDE8C33</Color>
             <Color x:Key="LightOrangeColor">#FFFFD59F</Color>
+            <SolidColorBrush x:Key="WhiteColorBrush" Color="{DynamicResource WhiteColor}"/>
             <SolidColorBrush x:Key="BackgroundColorBrush" Color="{DynamicResource GrayColor}"/>
             <SolidColorBrush x:Key="DarkBackgroundColorBrush" Color="{DynamicResource DarkGrayColor}"/>
             <SolidColorBrush x:Key="ForegroundColorBrush" Color="{DynamicResource LightGrayColor}"/>
@@ -23,9 +31,13 @@
         <Grid.Resources>
             <Style TargetType="TextBox">
                 <Setter Property="Background" Value="{StaticResource DarkBackgroundColorBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource ForegroundColorBrush}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Margin" Value="2"/>
+            </Style>
+            <Style TargetType="ComboBoxItem">
+                <Setter Property="Background" Value="{StaticResource BackgroundColorBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource WhiteColorBrush}"/>
+                <Setter Property="BorderThickness" Value="0"/>
             </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -43,21 +55,20 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Row="0" Name="Artist" ToolTip="Artist"/>
-            <TextBox Grid.Row="1" Name="Title" ToolTip="Title"/>
+            <TextBox Grid.Row="0" Name="Artist" ToolTip="Artist" Foreground="{StaticResource WhiteColorBrush}"/>
+            <TextBox Grid.Row="1" Name="Title" ToolTip="Title" Foreground="{StaticResource WhiteColorBrush}"/>
             <Button Grid.Column="1" Grid.RowSpan="2" Content="Search" ToolTip="Search lyrics in Google"
                     Click="OnSearchButtonClick" IsDefault="True"  Margin="2" Padding="2"/>
         </Grid>
         <TextBox Grid.Row="1" Name="Lyrics" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"
-                 FontSize="{Binding ElementName=FontSize, Path=Text}"/>
+                 FontSize="{Binding ElementName=FontSize, Path=Text}"
+                 Foreground="{StaticResource ForegroundColorBrush}"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <TextBlock Text="Lyrics Source:" Margin="2,0,5,0"/>
             <TextBlock Name="Source"/>
-            <ComboBox SelectionChanged="OnThemesComboBoxSelectionChanged">
-                <ComboBoxItem IsSelected="True" Content="Auto"/>
-                <ComboBoxItem Content="Dark"/>
-                <ComboBoxItem Content="Light"/>
-            </ComboBox>
+            <ComboBox Name="ThemesComboBox"
+                      ItemsSource="{Binding Source={StaticResource Themes}}"
+                      SelectionChanged="OnThemesComboBoxSelectionChanged"/>
         </StackPanel>
         <StackPanel Grid.Row="3" Orientation="Horizontal">
             <Button Content="Save As" Click="SaveLyrics" Margin="2" Padding="2"/>

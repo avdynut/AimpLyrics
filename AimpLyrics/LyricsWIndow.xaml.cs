@@ -1,4 +1,6 @@
 ﻿using Aimp4.Api;
+using AimpLyrics.Settings;
+using AimpLyrics.Themes;
 using Microsoft.Win32;
 using mshtml;
 using System;
@@ -257,17 +259,27 @@ namespace AimpLyrics
 
         private void OnThemesComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
+            var theme = (Theme)e.AddedItems[0];
+
+            if (theme == Theme.Auto)
             {
-                var theme = (e.AddedItems[0] as ComboBoxItem).Content;
-                var uri = new Uri($"pack://application:,,,/AimpLyrics;component/Themes/{theme}.xaml");
-                var resource = new ResourceDictionary() { Source = uri };
-                Resources.MergedDictionaries[0] = resource;
+                try
+                {
+                    string lightValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", "1")?.ToString();
+                    theme = lightValue == "1" ? Theme.Light : Theme.Dark;
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"Cannot get registry value: {ex}");
+                    theme = Theme.Dark;
+                }
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Cannot change theme: {ex}");
-            }
+
+            var uri = new Uri($"pack://application:,,,/AimpLyrics;component/Themes/{theme}.xaml");
+            Resources.MergedDictionaries[0].Source = uri;
+
+            var settings = new AimpLyricsPluginSettings();
+            settings.Theme = theme;
         }
     }
 }

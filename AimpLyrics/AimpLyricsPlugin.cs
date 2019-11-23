@@ -18,7 +18,6 @@ namespace AimpLyrics
 
         private LyricsWindow _lyricsWindow;
         private AimpMessageHook _hook;
-        private ILyricsPluginSettings _settings;
 
         public static IAIMPCore Core { get; private set; }
 
@@ -38,25 +37,12 @@ namespace AimpLyrics
             try
             {
                 Trace.WriteLine("Start Init");
-
                 Core = core;
 
                 SetUpLogger();
-
                 AddMenuItem();
                 RegisterHook();
-
-                _lyricsWindow = new LyricsWindow();
-                _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
-
-                _settings = new AimpLyricsPluginSettings();
-
-                if (_settings.OpenWindowOnInitializing)
-                    _hook.PlayerLoaded += OnPlayerLoaded;
-
-                if (_settings.RestoreWindowHeight)
-                    _lyricsWindow.Height = _settings.WindowHeight;
-
+                InitializeLyricsWindow();
                 RegisterOptions();
 
                 Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Version}-beta");
@@ -147,6 +133,22 @@ namespace AimpLyrics
             }
         }
 
+        private void InitializeLyricsWindow()
+        {
+            _lyricsWindow = new LyricsWindow();
+            _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
+
+            var settings = new AimpLyricsPluginSettings();
+
+            if (settings.OpenWindowOnInitializing)
+                _hook.PlayerLoaded += OnPlayerLoaded;
+
+            if (settings.RestoreWindowHeight)
+                _lyricsWindow.Height = settings.WindowHeight;
+
+            _lyricsWindow.ThemesComboBox.SelectedItem = settings.Theme;
+        }
+
         private void OnPlayerLoaded()
         {
             ShowLyricsWindow();
@@ -197,8 +199,9 @@ namespace AimpLyrics
 
         public void FinalizePlugin()
         {
-            if (_settings?.RestoreWindowHeight == true && _lyricsWindow != null)
-                _settings.WindowHeight = _lyricsWindow.ActualHeight;
+            var settings = new AimpLyricsPluginSettings();
+            if (settings?.RestoreWindowHeight == true && _lyricsWindow != null)
+                settings.WindowHeight = _lyricsWindow.ActualHeight;
 
             if (_hook != null)
             {

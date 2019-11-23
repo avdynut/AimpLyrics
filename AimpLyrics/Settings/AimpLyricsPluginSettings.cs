@@ -1,4 +1,5 @@
 ﻿using Aimp4.Api;
+using AimpLyrics.Themes;
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -59,6 +60,20 @@ namespace AimpLyrics.Settings
             set => SetDouble(value);
         }
 
+        public Theme Theme
+        {
+            get
+            {
+                int theme = GetInt32();
+                if (theme < 0 || !Enum.IsDefined(typeof(Theme), theme))
+                {
+                    theme = default;
+                }
+                return (Theme)theme;
+            }
+            set => SetInt32((int)value);
+        }
+
         private IAIMPServiceConfig Config => AimpLyricsPlugin.Core.GetService<IAIMPServiceConfig>();
 
         private IAIMPString GetKeyPath(string key)
@@ -111,6 +126,27 @@ namespace AimpLyrics.Settings
             return value;
         }
 
+        private int GetInt32([CallerMemberName] string key = "")
+        {
+            int value = 0;
+            var aimpKeyPath = GetKeyPath(key);
+
+            try
+            {
+                value = Config.GetValueAsInt32(aimpKeyPath);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"GetInt32: {ex}");
+            }
+            finally
+            {
+                aimpKeyPath?.ReleaseComObject();
+            }
+
+            return value;
+        }
+
         private void SetString(string value, [CallerMemberName] string key = "")
         {
             var aimpKeyPath = GetKeyPath(key);
@@ -126,6 +162,13 @@ namespace AimpLyrics.Settings
         {
             var aimpKeyPath = GetKeyPath(key);
             Config.SetValueAsFloat(aimpKeyPath, value);
+            aimpKeyPath?.ReleaseComObject();
+        }
+
+        private void SetInt32(int value, [CallerMemberName] string key = "")
+        {
+            var aimpKeyPath = GetKeyPath(key);
+            Config.SetValueAsInt32(aimpKeyPath, value);
             aimpKeyPath?.ReleaseComObject();
         }
     }
