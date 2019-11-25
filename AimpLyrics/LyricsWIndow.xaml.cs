@@ -1,18 +1,19 @@
 ﻿using Aimp4.Api;
-using AimpLyrics.Settings;
 using AimpLyrics.Themes;
 using Microsoft.Win32;
 using mshtml;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Web;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Threading;
 
 namespace AimpLyrics
@@ -26,8 +27,6 @@ namespace AimpLyrics
         private string _lyricsFilePath;
         private string _lyrics;
         private LyricsSource _source;
-
-        private bool _hideOnClosing = true;
 
         public LyricsWindow()
         {
@@ -238,25 +237,6 @@ namespace AimpLyrics
             SearchLyricsInGoogleOnBackground();
         }
 
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            if (_hideOnClosing)
-            {
-                Hide();
-                e.Cancel = true;
-            }
-            else
-            {
-                base.OnClosing(e);
-            }
-        }
-
-        public new void Close()
-        {
-            _hideOnClosing = false;
-            base.Close();
-        }
-
         private void OnThemesComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var theme = (Theme)e.AddedItems[0];
@@ -278,8 +258,42 @@ namespace AimpLyrics
             var uri = new Uri($"pack://application:,,,/AimpLyrics;component/Themes/{theme}.xaml");
             Resources.MergedDictionaries[0].Source = uri;
 
-            var settings = new AimpLyricsPluginSettings();
-            settings.Theme = theme;
+            //var settings = new AimpLyricsPluginSettings();
+            //settings.Theme = theme;
+        }
+
+        private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        //private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
+        //{
+        //    var path = (System.Windows.Shapes.Path)FindName("MaxButtonPath");
+        //    if (WindowState == WindowState.Maximized)
+        //    {
+        //        WindowState = WindowState.Normal;
+        //        path.Data = Geometry.Parse("M1,1L1,11 11,11 11,1z M0,0L12,0 12,12 0,12z");
+        //    }
+        //    else
+        //    {
+        //        WindowState = WindowState.Maximized;
+        //        path.Data = Geometry.Parse("M1,4.56L1,14.56 11,14.56 11,4.56z M4,1L4,3.56 12,3.56 12,11 14,11 14,1z M3,0L15,0 15,12 12,12 12,15.56 0,15.56 0,3.56 3,3.56z");
+        //    }
+        //}
+
+        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
+        {
+            Hide();
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        private void OnTitleBarMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // move window
+            SendMessage(new WindowInteropHelper(this).Handle, 0xA1, (IntPtr)0x2, (IntPtr)0);
         }
     }
 }
