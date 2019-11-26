@@ -80,6 +80,16 @@
                 <Setter Property="VerticalContentAlignment" Value="Bottom"/>
                 <Setter Property="Template" Value="{StaticResource ButtonBaseControlTemplate}"/>
             </Style>
+            <Style TargetType="ListBoxItem">
+                <Setter Property="Background" Value="{StaticResource InputBackgroundColorBrush}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="10,3"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{StaticResource AccentColorBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
@@ -91,11 +101,42 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Image Grid.Column="0" Source="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Icon}"/>
-            <TextBlock Grid.Column="1" Text="[Lyrics]" VerticalAlignment="Center" MouseDown="OnTitleBarMouseDown"/>
-            <ComboBox Name="ThemesComboBox"
-                      Grid.Column="2"
-                      ItemsSource="{Binding Source={StaticResource Themes}}"
-                      SelectionChanged="OnThemesComboBoxSelectionChanged"/>
+            <TextBlock Grid.Column="1"
+                       VerticalAlignment="Center"
+                       MouseDown="OnTitleBarMouseDown"
+                       Text="[Lyrics]"/>
+            <Button Name="SelectThemeButton"
+                    Grid.Column="2"
+                    Click="OnSelectThemeButtonClick"
+                    Content="Theme">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsOpen, ElementName=ThemesPopup}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource WhiteColorBrush}"/>
+                                <Setter Property="Background" Value="{StaticResource AccentColorBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Popup x:Name="ThemesPopup"
+                   AllowsTransparency="True"
+                   PlacementTarget="{Binding ElementName=SelectThemeButton}"
+                   PopupAnimation="Slide"
+                   StaysOpen="False">
+                <ListBox x:Name="ThemesListBox"
+                         Margin="10"
+                         BorderBrush="{StaticResource BackgroundColorBrush}"
+                         ItemsSource="{Binding Source={StaticResource Themes}}"
+                         SelectionChanged="OnThemesSelectionChanged"
+                         Background="{StaticResource InputBackgroundColorBrush}"
+                         Foreground="{StaticResource WhiteColorBrush}">
+                    <ListBox.Effect>
+                        <DropShadowEffect/>
+                    </ListBox.Effect>
+                </ListBox>
+            </Popup>
             <StackPanel Grid.Column="3"
                         Orientation="Horizontal"
                         Background="{StaticResource WindowTitleButtonBackgroundColorBrush}">

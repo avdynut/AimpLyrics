@@ -146,7 +146,7 @@ namespace AimpLyrics
             if (settings.RestoreWindowHeight)
                 _lyricsWindow.Height = settings.WindowHeight;
 
-            _lyricsWindow.ThemesComboBox.SelectedItem = settings.Theme;
+            _lyricsWindow.ThemesListBox.SelectedItem = settings.Theme;
         }
 
         private void OnPlayerLoaded()

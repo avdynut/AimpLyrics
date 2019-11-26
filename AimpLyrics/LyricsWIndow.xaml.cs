@@ -1,4 +1,5 @@
 ﻿using Aimp4.Api;
+using AimpLyrics.Settings;
 using AimpLyrics.Themes;
 using Microsoft.Win32;
 using mshtml;
@@ -237,7 +238,7 @@ namespace AimpLyrics
             SearchLyricsInGoogleOnBackground();
         }
 
-        private void OnThemesComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void OnThemesSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var theme = (Theme)e.AddedItems[0];
 
@@ -258,8 +259,10 @@ namespace AimpLyrics
             var uri = new Uri($"pack://application:,,,/AimpLyrics;component/Themes/{theme}.xaml");
             Resources.MergedDictionaries[0].Source = uri;
 
-            //var settings = new AimpLyricsPluginSettings();
-            //settings.Theme = theme;
+            ThemesPopup.IsOpen = false;
+
+            var settings = new AimpLyricsPluginSettings();
+            settings.Theme = theme;
         }
 
         private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
@@ -294,6 +297,11 @@ namespace AimpLyrics
         {
             // move window
             SendMessage(new WindowInteropHelper(this).Handle, 0xA1, (IntPtr)0x2, (IntPtr)0);
+        }
+
+        private void OnSelectThemeButtonClick(object sender, RoutedEventArgs e)
+        {
+            ThemesPopup.IsOpen = true;
         }
     }
 }
