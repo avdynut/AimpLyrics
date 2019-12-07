@@ -106,7 +106,7 @@ namespace AimpLyrics
             string url = "https://www.google.com/search?q=" + searchTerm;
             Trace.WriteLine($"Searching lyrics by term: {searchTerm}");
 
-            var httpClient = new HttpClient();
+            using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36");
             httpClient.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ru,en");
             var html = httpClient.GetStringAsync(url).Result;
