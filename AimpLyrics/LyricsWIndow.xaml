@@ -109,7 +109,10 @@
                        Margin="3"
                        RenderOptions.BitmapScalingMode="HighQuality"
                        Source="Resources/aimpLogo.png"/>
-                <TextBlock VerticalAlignment="Center" Text="[Lyrics]"/>
+                <TextBlock Name="WindowTitle"
+                           VerticalAlignment="Center"
+                           Text="[Lyrics]"
+                           ToolTip="{Binding Text, ElementName=WindowTitle}"/>
             </StackPanel>
             <Button Name="SelectThemeButton"
                     Grid.Column="1"
@@ -172,27 +175,26 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Name="Artist"
-                         Grid.Row="0"
-                         ToolTip="Artist"
-                         Foreground="{StaticResource WhiteColorBrush}"/>
-                <TextBox Name="Title"
-                         Grid.Row="1"
-                         ToolTip="Title"
-                         Foreground="{StaticResource WhiteColorBrush}"/>
-                <Button Grid.RowSpan="2"
-                        Grid.Column="1"
+                <TextBox Name="SearchTerm"
+                         Grid.Column="0"
+                         VerticalContentAlignment="Center"
+                         ToolTip="Search Term">
+                    <TextBox.Style>
+                        <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
+                            <Style.Triggers>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource WhiteColorBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <Button Grid.Column="1"
                         Margin="2"
-                        Padding="2"
-                        VerticalContentAlignment="Center"
                         Click="OnSearchButtonClick"
                         Content="Search"
                         IsDefault="True"
@@ -201,7 +203,7 @@
             <TextBox Name="Lyrics"
                      Grid.Row="1"
                      AcceptsReturn="True"
-                     FontSize="{Binding ElementName=FontSize, Path=Text}"
+                     FontSize="{Binding ElementName=FontSize, Path=Text, Delay=300}"
                      TextWrapping="Wrap"
                      VerticalScrollBarVisibility="Auto"
                      Foreground="{StaticResource ForegroundColorBrush}"/>

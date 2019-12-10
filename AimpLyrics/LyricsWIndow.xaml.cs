@@ -27,7 +27,12 @@ namespace AimpLyrics
         private string _filePath;
         private string _lyricsFilePath;
         private string _lyrics;
+        private string _artist;
+        private string _title;
         private LyricsSource _source;
+
+        private string ArtistTitle => string.IsNullOrEmpty(_artist) && string.IsNullOrEmpty(_title) ?
+            "🎵" : $"{_artist} - {_title}";
 
         public LyricsWindow()
         {
@@ -41,8 +46,11 @@ namespace AimpLyrics
             var player = AimpLyricsPlugin.Core.GetService<IAIMPServicePlayer>();
             var aimpFileInfo = player.GetInfo();
 
-            Artist.Text = aimpFileInfo.GetStringValue(AIMPFileInfoPropId.Artist);
-            Title.Text = aimpFileInfo.GetStringValue(AIMPFileInfoPropId.Title);
+            _artist = aimpFileInfo.GetStringValue(AIMPFileInfoPropId.Artist);
+            _title = aimpFileInfo.GetStringValue(AIMPFileInfoPropId.Title);
+            WindowTitle.Text = $"[Lyrics] {ArtistTitle}";
+            SearchTerm.Text = $"{_artist} {_title} lyrics";
+
             _lyrics = aimpFileInfo.GetStringValue(AIMPFileInfoPropId.Lyrics);
             _filePath = aimpFileInfo.GetStringValue(AIMPFileInfoPropId.FileName);
             aimpFileInfo?.ReleaseComObject();
@@ -92,19 +100,19 @@ namespace AimpLyrics
 
         private void SearchLyricsInGoogleOnBackground()
         {
-            string artist = Artist.Text;
-            string title = Title.Text;
-            var thread = new Thread(() => SearchLyricsInGoogle(artist, title));
+            string searchTerm = SearchTerm.Text;
+            if (string.IsNullOrEmpty(searchTerm))
+                return;
+
+            var thread = new Thread(() => SearchLyricsInGoogle(searchTerm));
             thread.Start();
         }
 
-        private void SearchLyricsInGoogle(string artist, string title)
+        private void SearchLyricsInGoogle(string searchTerm)
         {
-            if (string.IsNullOrEmpty(artist) && string.IsNullOrEmpty(title))
-                return;
-            string searchTerm = HttpUtility.UrlEncode($"{artist} {title} lyrics");
-            string url = "https://www.google.com/search?q=" + searchTerm;
-            Trace.WriteLine($"Searching lyrics by term: {searchTerm}");
+            string encoded = HttpUtility.UrlEncode(searchTerm);
+            string url = $"https://www.google.com/search?q={encoded}";
+            Trace.WriteLine($"Searching lyrics by term: {encoded}");
 
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36");
@@ -175,7 +183,7 @@ namespace AimpLyrics
 
             if (_filePath == null)
             {
-                dialog.FileName = $"{Artist.Text} - {Title.Text}.txt";
+                dialog.FileName = $"{ArtistTitle}.txt";
             }
             else
             {
