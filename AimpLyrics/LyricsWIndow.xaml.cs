@@ -178,17 +178,18 @@ namespace AimpLyrics
         {
             var dialog = new SaveFileDialog
             {
-                Filter = "Text file (*.txt)|*.txt|Lyrics file (*.lrc)|*.lrc|Subtitles file (*.srt)|*.srt"
+                Filter = "Text file (*.txt)|*.txt|Lyrics file (*.lrc)|*.lrc|Subtitles file (*.srt)|*.srt",
+                FileName = $"{ArtistTitle}.txt"
             };
 
-            if (_filePath == null)
+            if (_filePath != null)
             {
-                dialog.FileName = $"{ArtistTitle}.txt";
-            }
-            else
-            {
-                dialog.FileName = Path.GetFileNameWithoutExtension(_filePath) + ".txt";
-                dialog.InitialDirectory = Path.GetDirectoryName(_filePath);
+                string directory = Path.GetDirectoryName(_filePath);
+                if (Directory.Exists(directory))
+                {
+                    dialog.InitialDirectory = directory;
+                    dialog.FileName = Path.GetFileNameWithoutExtension(_filePath) + ".txt";
+                }
             }
 
             if (dialog.ShowDialog() != true)
