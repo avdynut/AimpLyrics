@@ -65,7 +65,7 @@ namespace AimpLyrics
         private void ClearLyrics()
         {
             Lyrics.Text = "";
-            Source.Text = "";
+            Lyrics.ToolTip = "";
             _source = LyricsSource.None;
         }
 
@@ -81,7 +81,7 @@ namespace AimpLyrics
 
             Lyrics.Text = File.ReadAllText(_lyricsFilePath);
             _source = LyricsSource.File;
-            Source.Text = Path.GetFileName(_lyricsFilePath);
+            Lyrics.ToolTip = Path.GetFileName(_lyricsFilePath);
             Trace.WriteLine($"Lyrics received from {_lyricsFilePath}");
             return true;
         }
@@ -93,7 +93,7 @@ namespace AimpLyrics
 
             Lyrics.Text = _lyrics;
             _source = LyricsSource.Tag;
-            Source.Text = _source.ToString();
+            Lyrics.ToolTip = _source.ToString();
             Trace.WriteLine("Lyrics received from lyrics tag");
             return true;
         }
@@ -125,7 +125,7 @@ namespace AimpLyrics
 
             if (string.IsNullOrEmpty(lyrics))
             {
-                Dispatcher.BeginInvoke(new Action(() => Source.Text = "Not Found"));
+                Dispatcher.BeginInvoke(new Action(() => Lyrics.ToolTip = "Not Found"));
                 Trace.WriteLine("Lyrics not found");
             }
             else
@@ -134,7 +134,7 @@ namespace AimpLyrics
                 {
                     Lyrics.Text = lyrics;
                     _source = LyricsSource.Google;
-                    Source.Text = _source.ToString();
+                    Lyrics.ToolTip = _source.ToString();
                 }));
                 Trace.WriteLine("Lyrics received from Google");
             }
@@ -197,7 +197,7 @@ namespace AimpLyrics
 
             _lyricsFilePath = dialog.FileName;
             File.WriteAllText(_lyricsFilePath, Lyrics.Text);
-            Source.Text = Path.GetFileName(_lyricsFilePath);
+            Lyrics.ToolTip = Path.GetFileName(_lyricsFilePath);
             _source = LyricsSource.File;
             Trace.WriteLine($"Lyrics have been saved to {_lyricsFilePath}");
         }

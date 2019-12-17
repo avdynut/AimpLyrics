@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Markup;
 
 namespace AimpLyrics
 {
@@ -139,14 +140,20 @@ namespace AimpLyrics
             _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
 
             var settings = new AimpLyricsPluginSettings();
+            _lyricsWindow.ThemesListBox.SelectedItem = settings.Theme;
 
             if (settings.OpenWindowOnInitializing)
                 _hook.PlayerLoaded += OnPlayerLoaded;
 
-            if (settings.RestoreWindowHeight)
-                _lyricsWindow.Height = settings.WindowHeight;
-
-            _lyricsWindow.ThemesListBox.SelectedItem = settings.Theme;
+            try
+            {   // sometimes occurs error
+                if (settings.RestoreWindowHeight)
+                    _lyricsWindow.Height = settings.WindowHeight;
+            }
+            catch (XamlParseException ex)
+            {
+                Trace.WriteLine($"Cannot set window height: {ex}");
+            }
         }
 
         private void OnPlayerLoaded()
