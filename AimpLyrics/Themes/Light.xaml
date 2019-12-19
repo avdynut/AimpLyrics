@@ -2,9 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Color x:Key="White">Black</Color>
-    <Color x:Key="Gray15">#FFE3E3E3</Color>
-    <Color x:Key="Gray30">#FFC3C3C3</Color>
-    <Color x:Key="Gray3C">#FF908D8D</Color>
-    <Color x:Key="Gray9D">#FF676666</Color>
-    <Color x:Key="GrayB7">#FF414040</Color>
+    <Color x:Key="Gray15">#FF1F1F1F</Color>
+    <Color x:Key="Gray30">#FF454545</Color>
+    <Color x:Key="Gray3C">#FFF1F1F1</Color>
+    <Color x:Key="Gray9D">#FFC6C6C6</Color>
+    <Color x:Key="GrayB7">#FF414141</Color>
 </ResourceDictionary>

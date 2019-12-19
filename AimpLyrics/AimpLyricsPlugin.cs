@@ -6,7 +6,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Markup;
 
 namespace AimpLyrics
 {
@@ -146,13 +145,13 @@ namespace AimpLyrics
                 _hook.PlayerLoaded += OnPlayerLoaded;
 
             try
-            {   // sometimes occurs error
+            {
                 if (settings.RestoreWindowHeight)
                     _lyricsWindow.Height = settings.WindowHeight;
             }
-            catch (XamlParseException ex)
+            catch
             {
-                Trace.WriteLine($"Cannot set window height: {ex}");
+                Trace.WriteLine($"Error while setting window height");
             }
         }
 
