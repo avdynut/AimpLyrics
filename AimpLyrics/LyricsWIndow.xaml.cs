@@ -1,6 +1,7 @@
 ﻿using Aimp4.Api;
 using AimpLyrics.Settings;
 using AimpLyrics.Themes;
+using AimpLyrics.ViewModels;
 using Microsoft.Win32;
 using mshtml;
 using System;
@@ -30,12 +31,16 @@ namespace AimpLyrics
         private string _artist;
         private string _title;
         private LyricsSource _source;
+        private readonly ILyricsPluginSettings _settings;
 
         private string ArtistTitle => string.IsNullOrEmpty(_artist) && string.IsNullOrEmpty(_title) ?
             "🎵" : $"{_artist} - {_title}";
 
-        public LyricsWindow()
+        public LyricsWindow(ILyricsPluginSettings settings)
         {
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            DataContext = new SettingsViewModel(_settings);
+
             InitializeComponent();
         }
 
@@ -270,8 +275,7 @@ namespace AimpLyrics
 
             ThemesPopup.IsOpen = false;
 
-            var settings = new AimpLyricsPluginSettings();
-            settings.Theme = theme;
+            _settings.Theme = theme;
         }
 
         private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)

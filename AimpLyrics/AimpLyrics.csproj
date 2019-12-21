@@ -386,6 +386,7 @@
     </Compile>
     <Compile Include="Settings\OptionsFrame.cs" />
     <Compile Include="Themes\Theme.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="LyricsWindow.xaml">

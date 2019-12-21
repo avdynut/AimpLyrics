@@ -1,13 +1,18 @@
 ﻿<Window x:Class="AimpLyrics.LyricsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:themes="clr-namespace:AimpLyrics.Themes"
+        xmlns:vm="clr-namespace:AimpLyrics.ViewModels"
         MinWidth="280"
         MinHeight="120"
+        d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
         Icon="Resources/aimpLogo.png"
         SizeToContent="Width"
         WindowStyle="None"
+        mc:Ignorable="d"
         Background="{DynamicResource BackgroundColorBrush}"
         Foreground="{DynamicResource ForegroundColorBrush}">
     <WindowChrome.WindowChrome>
@@ -210,7 +215,7 @@
             <TextBox Name="Lyrics"
                      Grid.Row="1"
                      AcceptsReturn="True"
-                     FontSize="{Binding ElementName=FontSize, Path=Text, Delay=300}"
+                     FontSize="{Binding LyricsFontSize}"
                      TextWrapping="Wrap"
                      VerticalScrollBarVisibility="Auto"/>
             <DockPanel Grid.Row="2"
@@ -219,13 +224,12 @@
                 <Button Click="SaveLyrics"
                         Content="Save As"
                         DockPanel.Dock="Left"/>
-                <TextBox Name="FontSize"
-                         MinWidth="20"
+                <TextBox MinWidth="20"
                          Margin="0"
                          VerticalAlignment="Center"
                          DockPanel.Dock="Right"
                          Style="{StaticResource ChangeColorTextBoxStyle}"
-                         Text="14"
+                         Text="{Binding LyricsFontSize, Delay=300, UpdateSourceTrigger=PropertyChanged}"
                          ToolTip="Font Size"/>
             </DockPanel>
         </Grid>

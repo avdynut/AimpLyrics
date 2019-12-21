@@ -60,6 +60,21 @@ namespace AimpLyrics.Settings
             set => SetDouble(value);
         }
 
+        private readonly double _defaultLyricsFontSize = 14;
+        public double LyricsFontSize
+        {
+            get
+            {
+                double fontSize = GetDouble();
+                if (fontSize < 5 || fontSize > 500)
+                {
+                    LyricsFontSize = fontSize = _defaultLyricsFontSize;
+                }
+                return fontSize;
+            }
+            set => SetDouble(value);
+        }
+
         public Theme Theme
         {
             get

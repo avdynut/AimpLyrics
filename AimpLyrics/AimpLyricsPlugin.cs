@@ -135,10 +135,10 @@ namespace AimpLyrics
 
         private void InitializeLyricsWindow()
         {
-            _lyricsWindow = new LyricsWindow();
+            var settings = new AimpLyricsPluginSettings();
+            _lyricsWindow = new LyricsWindow(settings);
             _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
 
-            var settings = new AimpLyricsPluginSettings();
             _lyricsWindow.ThemesListBox.SelectedItem = settings.Theme;
 
             if (settings.OpenWindowOnInitializing)
