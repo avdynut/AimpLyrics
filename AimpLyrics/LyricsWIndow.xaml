@@ -152,6 +152,7 @@
                          Margin="10"
                          BorderBrush="{StaticResource BackgroundColorBrush}"
                          ItemsSource="{Binding Source={StaticResource Themes}}"
+                         SelectedItem="{Binding Theme}"
                          SelectionChanged="OnThemesSelectionChanged"
                          Background="{StaticResource InputBackgroundColorBrush}"
                          Foreground="{StaticResource WhiteColorBrush}">

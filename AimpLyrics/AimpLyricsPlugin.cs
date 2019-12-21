@@ -139,8 +139,6 @@ namespace AimpLyrics
             _lyricsWindow = new LyricsWindow(settings);
             _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
 
-            _lyricsWindow.ThemesListBox.SelectedItem = settings.Theme;
-
             if (settings.OpenWindowOnInitializing)
                 _hook.PlayerLoaded += OnPlayerLoaded;
 

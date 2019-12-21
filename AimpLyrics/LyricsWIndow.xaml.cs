@@ -1,6 +1,5 @@
 ﻿using Aimp4.Api;
 using AimpLyrics.Settings;
-using AimpLyrics.Themes;
 using AimpLyrics.ViewModels;
 using Microsoft.Win32;
 using mshtml;
@@ -31,15 +30,13 @@ namespace AimpLyrics
         private string _artist;
         private string _title;
         private LyricsSource _source;
-        private readonly ILyricsPluginSettings _settings;
 
         private string ArtistTitle => string.IsNullOrEmpty(_artist) && string.IsNullOrEmpty(_title) ?
             "🎵" : $"{_artist} - {_title}";
 
         public LyricsWindow(ILyricsPluginSettings settings)
         {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            DataContext = new SettingsViewModel(_settings);
+            DataContext = new SettingsViewModel(settings);
 
             InitializeComponent();
         }
@@ -252,30 +249,14 @@ namespace AimpLyrics
             SearchLyricsInGoogleOnBackground();
         }
 
+        private void OnSelectThemeButtonClick(object sender, RoutedEventArgs e)
+        {
+            ThemesPopup.IsOpen = true;
+        }
+
         private void OnThemesSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var theme = (Theme)e.AddedItems[0];
-
-            if (theme == Theme.Auto)
-            {
-                try
-                {
-                    string lightValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", "1")?.ToString();
-                    theme = lightValue == "1" ? Theme.Light : Theme.Dark;
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine($"Cannot get registry value: {ex}");
-                    theme = Theme.Dark;
-                }
-            }
-
-            var uri = new Uri($"pack://application:,,,/AimpLyrics;component/Themes/{theme}.xaml");
-            Resources.MergedDictionaries[0].Source = uri;
-
             ThemesPopup.IsOpen = false;
-
-            _settings.Theme = theme;
         }
 
         private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
@@ -310,11 +291,6 @@ namespace AimpLyrics
         {
             // move window
             SendMessage(new WindowInteropHelper(this).Handle, 0xA1, (IntPtr)0x2, (IntPtr)0);
-        }
-
-        private void OnSelectThemeButtonClick(object sender, RoutedEventArgs e)
-        {
-            ThemesPopup.IsOpen = true;
         }
     }
 }
