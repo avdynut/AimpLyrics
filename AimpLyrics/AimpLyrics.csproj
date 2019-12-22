@@ -410,6 +410,35 @@
   <ItemGroup>
     <Resource Include="Resources\aimpLogo.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="aimp_sdk\Help\AIMP-en.chm" />
+    <None Include="aimp_sdk\Help\AIMP-ru.chm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="aimp_sdk\CppApi\apiActions.h" />
+    <Content Include="aimp_sdk\CppApi\apiAlbumArt.h" />
+    <Content Include="aimp_sdk\CppApi\apiCore.h" />
+    <Content Include="aimp_sdk\CppApi\apiDecoders.h" />
+    <Content Include="aimp_sdk\CppApi\apiFileManager.h" />
+    <Content Include="aimp_sdk\CppApi\apiGUI.h" />
+    <Content Include="aimp_sdk\CppApi\apiInternet.h" />
+    <Content Include="aimp_sdk\CppApi\apiLyrics.h" />
+    <Content Include="aimp_sdk\CppApi\apiMenu.h" />
+    <Content Include="aimp_sdk\CppApi\apiMessages.h" />
+    <Content Include="aimp_sdk\CppApi\apiMUI.h" />
+    <Content Include="aimp_sdk\CppApi\apiMusicLibrary.h" />
+    <Content Include="aimp_sdk\CppApi\apiObjects.h" />
+    <Content Include="aimp_sdk\CppApi\apiOptions.h" />
+    <Content Include="aimp_sdk\CppApi\apiPlayer.h" />
+    <Content Include="aimp_sdk\CppApi\apiPlaylists.h" />
+    <Content Include="aimp_sdk\CppApi\apiPlugin.h" />
+    <Content Include="aimp_sdk\CppApi\apiRemote.h" />
+    <Content Include="aimp_sdk\CppApi\apiScheduler.h" />
+    <Content Include="aimp_sdk\CppApi\apiSkins.h" />
+    <Content Include="aimp_sdk\CppApi\apiTagEditor.h" />
+    <Content Include="aimp_sdk\CppApi\apiThreading.h" />
+    <Content Include="aimp_sdk\CppApi\apiVisuals.h" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
