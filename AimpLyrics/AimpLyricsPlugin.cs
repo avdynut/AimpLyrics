@@ -13,7 +13,7 @@ namespace AimpLyrics
     {
         public const string Name = "AimpLyrics";
         public const string Author = "Andrey Arekhva";
-        public const string Version = "1.1.2";
+        public const string Version = "1.2.0";
         public const string Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google";
 
         private LyricsWindow _lyricsWindow;
@@ -45,7 +45,7 @@ namespace AimpLyrics
                 InitializeLyricsWindow();
                 RegisterOptions();
 
-                Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Version}-beta");
+                Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Version}");
             }
             catch (Exception ex)
             {
