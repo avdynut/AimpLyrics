@@ -1,16 +1,17 @@
 # AimpLyrics
 Lyrics plugin for [AIMP music player](http://www.aimp.ru/).
 
-<img src="https://i.imgur.com/OvCaZRg.png" alt="Screenshot" border="0" />
+<img src="https://i.ibb.co/gdSLG1z/Aimp-Lyrics-Plugin.png" alt="Screenshot" border="0"/>
 
 ### Features:
 * display lyrics of current playing song (from file, or tag)
 * auto search missing lyrics in *Google*
-* ability to edit artist/title for search
+* ability to edit search term
 * open lyrics window by hot keys (*Ctrl+Alt+L* global, or *Shift+L* local - by default)
 * save lyrics to file
-* edit font size
+* change font size
 * auto open lyrics window on player start
+* choose color theme
 
 The plugin is written on *C#* via *COM Interop* thanks to [AIMP-net-api](https://github.com/antrv/AIMP-net-api).
 
