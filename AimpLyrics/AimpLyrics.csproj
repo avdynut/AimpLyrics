@@ -5,6 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0D69A5AE-7868-49F5-8777-97299AE22A0D}</ProjectGuid>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AimpLyrics</RootNamespace>
@@ -59,6 +60,9 @@
       <HintPath>$(SolutionDir)packages\DllExport.1.6.5\gcache\metalib\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -381,28 +385,59 @@
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Settings\OptionsFrame.cs" />
+    <Compile Include="Themes\Theme.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="LyricsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="MSHTML">
-      <Guid>{3050F1C5-98B5-11CF-BB82-00AA00BDCE0B}</Guid>
-      <VersionMajor>4</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
+    <Resource Include="Themes\Light.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Themes\Dark.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Settings\OptionsForm.resx">
       <DependentUpon>OptionsForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\aimpLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="aimp_sdk\Help\AIMP-en.chm" />
+    <None Include="aimp_sdk\Help\AIMP-ru.chm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="aimp_sdk\CppApi\apiActions.h" />
+    <Content Include="aimp_sdk\CppApi\apiAlbumArt.h" />
+    <Content Include="aimp_sdk\CppApi\apiCore.h" />
+    <Content Include="aimp_sdk\CppApi\apiDecoders.h" />
+    <Content Include="aimp_sdk\CppApi\apiFileManager.h" />
+    <Content Include="aimp_sdk\CppApi\apiGUI.h" />
+    <Content Include="aimp_sdk\CppApi\apiInternet.h" />
+    <Content Include="aimp_sdk\CppApi\apiLyrics.h" />
+    <Content Include="aimp_sdk\CppApi\apiMenu.h" />
+    <Content Include="aimp_sdk\CppApi\apiMessages.h" />
+    <Content Include="aimp_sdk\CppApi\apiMUI.h" />
+    <Content Include="aimp_sdk\CppApi\apiMusicLibrary.h" />
+    <Content Include="aimp_sdk\CppApi\apiObjects.h" />
+    <Content Include="aimp_sdk\CppApi\apiOptions.h" />
+    <Content Include="aimp_sdk\CppApi\apiPlayer.h" />
+    <Content Include="aimp_sdk\CppApi\apiPlaylists.h" />
+    <Content Include="aimp_sdk\CppApi\apiPlugin.h" />
+    <Content Include="aimp_sdk\CppApi\apiRemote.h" />
+    <Content Include="aimp_sdk\CppApi\apiScheduler.h" />
+    <Content Include="aimp_sdk\CppApi\apiSkins.h" />
+    <Content Include="aimp_sdk\CppApi\apiTagEditor.h" />
+    <Content Include="aimp_sdk\CppApi\apiThreading.h" />
+    <Content Include="aimp_sdk\CppApi\apiVisuals.h" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -410,7 +445,7 @@
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <DllExportIdent>30DBA973-570E-4574-B7C8-2964D03E8CB5</DllExportIdent>
+    <DllExportIdent>FE8E5334-CC3F-4066-9149-B08ADFFA9C01</DllExportIdent>
     <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
     <DllExportNamespace>RGiesecke.DllExport</DllExportNamespace>
     <DllExportDDNSCecil>true</DllExportDDNSCecil>

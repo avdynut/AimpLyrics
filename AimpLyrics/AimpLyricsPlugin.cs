@@ -3,7 +3,6 @@ using AimpLyrics.Settings;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
@@ -14,12 +13,11 @@ namespace AimpLyrics
     {
         public const string Name = "AimpLyrics";
         public const string Author = "Andrey Arekhva";
-        public const string Version = "1.1.0";
+        public const string Version = "1.2.0";
         public const string Description = "Display lyrics for current playing song. Find lyrics in file, tag or Google";
 
         private LyricsWindow _lyricsWindow;
         private AimpMessageHook _hook;
-        private ILyricsPluginSettings _settings;
 
         public static IAIMPCore Core { get; private set; }
 
@@ -36,34 +34,31 @@ namespace AimpLyrics
 
         public void Initialize(IAIMPCore core)
         {
-            Core = core;
+            try
+            {
+                Trace.WriteLine("Start Init");
+                Core = core;
 
-            AddMenuItem();
-            RegisterHook();
+                SetUpLogger();
+                AddMenuItem();
+                RegisterHook();
+                InitializeLyricsWindow();
+                RegisterOptions();
 
-            _lyricsWindow = new LyricsWindow();
-            _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
-
-            _settings = new AimpLyricsPluginSettings();
-
-            if (_settings.OpenWindowOnInitializing)
-                _hook.PlayerLoaded += OnPlayerLoaded;
-
-            if (_settings.RestoreWindowHeight)
-                _lyricsWindow.Height = _settings.WindowHeight;
-
-            RegisterOptions();
-
-            SetUpLogger();
-
-            Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Version}-beta");
+                Trace.WriteLine($"Initialized AIMP Lyrics Plugin v{Version}");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"Init error: {ex}");
+                throw;
+            }
         }
 
         private void AddMenuItem()
         {
             IAIMPMenuItem menuItem = null;
             IAIMPAction action = null;
-            IAIMPString name = null;
+            IAIMPString actionName = null;
             IAIMPString id = null;
             IAIMPString groupName = null;
             IAIMPMenuItem parentMenu = null;
@@ -73,13 +68,13 @@ namespace AimpLyrics
                 menuItem = Core.CreateObject<IAIMPMenuItem>();
                 action = Core.CreateObject<IAIMPAction>();
 
-                name = Core.CreateString("Open Lyrics");
-                action.SetProperty(AIMPActionPropId.Name, name);
+                actionName = Core.CreateString("Lyrics");
+                action.SetProperty(AIMPActionPropId.Name, actionName);
 
                 id = Core.CreateString("aimp.lyrics.open.window");
                 action.SetProperty(AIMPActionPropId.Id, id);
 
-                groupName = Core.CreateString("Lyrics");
+                groupName = Core.CreateString("Lyrics Plugin");
                 action.SetProperty(AIMPActionPropId.GroupName, groupName);
 
                 var actionManager = Core.GetService<IAIMPServiceActionManager>();
@@ -114,7 +109,7 @@ namespace AimpLyrics
             {
                 menuItem?.ReleaseComObject();
                 action?.ReleaseComObject();
-                name?.ReleaseComObject();
+                actionName?.ReleaseComObject();
                 id?.ReleaseComObject();
                 groupName?.ReleaseComObject();
                 parentMenu?.ReleaseComObject();
@@ -135,6 +130,31 @@ namespace AimpLyrics
             {
                 Trace.WriteLine($"Cannot register message hook: {ex}");
                 throw;
+            }
+        }
+
+        private void InitializeLyricsWindow()
+        {
+            var settings = new AimpLyricsPluginSettings();
+            _lyricsWindow = new LyricsWindow(settings);
+            _hook.FileInfoReceived += _lyricsWindow.UpdateSongInfo;
+
+            if (settings.OpenWindowOnInitializing)
+                _hook.PlayerLoaded += OnPlayerLoaded;
+
+            try
+            {
+                if (settings.RestoreWindowLocation)
+                {
+                    _lyricsWindow.Top = settings.WindowTop;
+                    _lyricsWindow.Left = settings.WindowLeft;
+                }
+
+                _lyricsWindow.Height = settings.WindowHeight;
+            }
+            catch
+            {
+                Trace.WriteLine($"Error while setting double values to window");
             }
         }
 
@@ -171,7 +191,11 @@ namespace AimpLyrics
 
         private void SetUpLogger()
         {
-            var logFilePath = Path.Combine(Assembly.GetExecutingAssembly().GetName().Name, "log.txt");
+            var aimpString = Core.GetPath(AIMPCorePath.Profile);
+            string profilePath = aimpString.GetData();
+            aimpString.ReleaseComObject();
+
+            var logFilePath = Path.Combine(profilePath, "AimpLyricsPluginLog.txt");
             File.Delete(logFilePath);
             Trace.Listeners.Add(new TextWriterTraceListener(logFilePath));
             Trace.AutoFlush = true;
@@ -184,9 +208,6 @@ namespace AimpLyrics
 
         public void FinalizePlugin()
         {
-            if (_settings?.RestoreWindowHeight == true && _lyricsWindow != null)
-                _settings.WindowHeight = (int)_lyricsWindow.ActualHeight;
-
             if (_hook != null)
             {
                 _hook.FileInfoReceived -= _lyricsWindow.UpdateSongInfo;

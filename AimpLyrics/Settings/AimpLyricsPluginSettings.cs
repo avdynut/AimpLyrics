@@ -1,8 +1,9 @@
 ﻿using Aimp4.Api;
+using AimpLyrics.Themes;
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-#nullable enable
 namespace AimpLyrics.Settings
 {
     public class AimpLyricsPluginSettings : ILyricsPluginSettings
@@ -25,8 +26,8 @@ namespace AimpLyrics.Settings
             set => SetString(Convert.ToString(value));
         }
 
-        private readonly bool _defaultRestoreWindowHeight = true;
-        public bool RestoreWindowHeight
+        private readonly bool _defaultRestoreWindowLocation = true;
+        public bool RestoreWindowLocation
         {
             get
             {
@@ -36,19 +37,49 @@ namespace AimpLyrics.Settings
                     return result;
                 else
                 {
-                    RestoreWindowHeight = _defaultRestoreWindowHeight;
-                    return _defaultRestoreWindowHeight;
+                    RestoreWindowLocation = _defaultRestoreWindowLocation;
+                    return _defaultRestoreWindowLocation;
                 }
             }
             set => SetString(Convert.ToString(value));
         }
 
-        private readonly int _defaultWindowHeight = 600;
-        public int WindowHeight
+        public double WindowTop
         {
             get
             {
-                int height = GetInt32();
+                double top = GetDouble();
+
+                if (top < 0)
+                {
+                    WindowTop = top = 0;
+                }
+                return top;
+            }
+            set => SetDouble(value);
+        }
+
+        public double WindowLeft
+        {
+            get
+            {
+                double left = GetDouble();
+
+                if (left < 0)
+                {
+                    WindowLeft = left = 0;
+                }
+                return left;
+            }
+            set => SetDouble(value);
+        }
+
+        private readonly double _defaultWindowHeight = 600;
+        public double WindowHeight
+        {
+            get
+            {
+                double height = GetDouble();
 
                 if (height < 50 || height > 3000)
                 {
@@ -56,7 +87,36 @@ namespace AimpLyrics.Settings
                 }
                 return height;
             }
-            set => SetInt32(value);
+            set => SetDouble(value);
+        }
+
+        private readonly double _defaultLyricsFontSize = 14;
+        public double LyricsFontSize
+        {
+            get
+            {
+                double fontSize = GetDouble();
+                if (fontSize < 5 || fontSize > 500)
+                {
+                    LyricsFontSize = fontSize = _defaultLyricsFontSize;
+                }
+                return fontSize;
+            }
+            set => SetDouble(value);
+        }
+
+        public Theme Theme
+        {
+            get
+            {
+                int theme = GetInt32();
+                if (theme < 0 || !Enum.IsDefined(typeof(Theme), theme))
+                {
+                    theme = default;
+                }
+                return (Theme)theme;
+            }
+            set => SetInt32((int)value);
         }
 
         private IAIMPServiceConfig Config => AimpLyricsPlugin.Core.GetService<IAIMPServiceConfig>();
@@ -69,21 +129,66 @@ namespace AimpLyrics.Settings
 
         private string GetString([CallerMemberName] string key = "")
         {
+            string value = null;
             var aimpKeyPath = GetKeyPath(key);
-            var aimpValue = Config.GetValueAsString(aimpKeyPath);
-            string value = aimpValue.GetData();
 
-            aimpKeyPath?.ReleaseComObject();
-            aimpValue?.ReleaseComObject();
+            try
+            {
+                var aimpValue = Config.GetValueAsString(aimpKeyPath);
+                value = aimpValue.GetData();
+                aimpValue?.ReleaseComObject();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"GetString: {ex}");
+            }
+            finally
+            {
+                aimpKeyPath?.ReleaseComObject();
+            }
+
+            return value;
+        }
+
+        private double GetDouble([CallerMemberName] string key = "")
+        {
+            double value = 0;
+            var aimpKeyPath = GetKeyPath(key);
+
+            try
+            {
+                value = Config.GetValueAsFloat(aimpKeyPath);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"GetDouble: {ex}");
+            }
+            finally
+            {
+                aimpKeyPath?.ReleaseComObject();
+            }
 
             return value;
         }
 
         private int GetInt32([CallerMemberName] string key = "")
         {
+            int value = 0;
             var aimpKeyPath = GetKeyPath(key);
-            int value = Config.GetValueAsInt32(aimpKeyPath);
-            aimpKeyPath?.ReleaseComObject();
+
+            try
+            {
+                value = Config.GetValueAsInt32(aimpKeyPath);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"GetInt32: {ex}");
+            }
+            finally
+            {
+                aimpKeyPath?.ReleaseComObject();
+            }
+
             return value;
         }
 
@@ -96,6 +201,13 @@ namespace AimpLyrics.Settings
 
             aimpKeyPath?.ReleaseComObject();
             aimpValue?.ReleaseComObject();
+        }
+
+        private void SetDouble(double value, [CallerMemberName] string key = "")
+        {
+            var aimpKeyPath = GetKeyPath(key);
+            Config.SetValueAsFloat(aimpKeyPath, value);
+            aimpKeyPath?.ReleaseComObject();
         }
 
         private void SetInt32(int value, [CallerMemberName] string key = "")

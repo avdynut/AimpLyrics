@@ -9,7 +9,9 @@ namespace Aimp4.Api
     {
         // Delete
         void Delete(IAIMPString keyPath);
+
         // Read
+        // returns E_FAIL when value is not found
         double GetValueAsFloat(IAIMPString keyPath);
         int GetValueAsInt32(IAIMPString keyPath);
         long GetValueAsInt64(IAIMPString keyPath);

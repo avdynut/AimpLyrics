@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.RestoreWindowHeightCheckBox = new System.Windows.Forms.CheckBox();
+            this.RestoreWindowLocationCheckBox = new System.Windows.Forms.CheckBox();
             this.OpenWindowOnInitCheckBox = new System.Windows.Forms.CheckBox();
             this.backgroundGroupBox = new System.Windows.Forms.GroupBox();
             this.optionsGroupBox = new System.Windows.Forms.GroupBox();
@@ -36,15 +36,15 @@
             this.optionsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // RestoreWindowHeightCheckBox
+            // RestoreWindowLocationCheckBox
             // 
-            this.RestoreWindowHeightCheckBox.AutoSize = true;
-            this.RestoreWindowHeightCheckBox.Location = new System.Drawing.Point(6, 43);
-            this.RestoreWindowHeightCheckBox.Name = "RestoreWindowHeightCheckBox";
-            this.RestoreWindowHeightCheckBox.Size = new System.Drawing.Size(167, 17);
-            this.RestoreWindowHeightCheckBox.TabIndex = 1;
-            this.RestoreWindowHeightCheckBox.Text = "Remember last window height";
-            this.RestoreWindowHeightCheckBox.UseVisualStyleBackColor = true;
+            this.RestoreWindowLocationCheckBox.AutoSize = true;
+            this.RestoreWindowLocationCheckBox.Location = new System.Drawing.Point(6, 43);
+            this.RestoreWindowLocationCheckBox.Name = "RestoreWindowLocationCheckBox";
+            this.RestoreWindowLocationCheckBox.Size = new System.Drawing.Size(142, 17);
+            this.RestoreWindowLocationCheckBox.TabIndex = 1;
+            this.RestoreWindowLocationCheckBox.Text = "Restore window location";
+            this.RestoreWindowLocationCheckBox.UseVisualStyleBackColor = true;
             // 
             // OpenWindowOnInitCheckBox
             // 
@@ -72,7 +72,7 @@
             this.optionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsGroupBox.Controls.Add(this.OpenWindowOnInitCheckBox);
-            this.optionsGroupBox.Controls.Add(this.RestoreWindowHeightCheckBox);
+            this.optionsGroupBox.Controls.Add(this.RestoreWindowLocationCheckBox);
             this.optionsGroupBox.Location = new System.Drawing.Point(12, 19);
             this.optionsGroupBox.Name = "optionsGroupBox";
             this.optionsGroupBox.Size = new System.Drawing.Size(546, 73);
@@ -99,7 +99,7 @@
 
         #endregion
 
-        internal System.Windows.Forms.CheckBox RestoreWindowHeightCheckBox;
+        internal System.Windows.Forms.CheckBox RestoreWindowLocationCheckBox;
         internal System.Windows.Forms.CheckBox OpenWindowOnInitCheckBox;
         private System.Windows.Forms.GroupBox backgroundGroupBox;
         private System.Windows.Forms.GroupBox optionsGroupBox;

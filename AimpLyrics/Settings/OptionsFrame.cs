@@ -29,7 +29,7 @@ namespace AimpLyrics.Settings
             SetParent(_optionsForm.Handle, parentWindow);
 
             _optionsForm.OpenWindowOnInitCheckBox.Click += OnCheckBoxClick;
-            _optionsForm.RestoreWindowHeightCheckBox.Click += OnCheckBoxClick;
+            _optionsForm.RestoreWindowLocationCheckBox.Click += OnCheckBoxClick;
 
             _optionsForm.Show();
             return _optionsForm.Handle;
@@ -60,7 +60,7 @@ namespace AimpLyrics.Settings
                     if (_optionsForm != null)
                     {
                         _optionsForm.OpenWindowOnInitCheckBox.Checked = settings.OpenWindowOnInitializing;
-                        _optionsForm.RestoreWindowHeightCheckBox.Checked = settings.RestoreWindowHeight;
+                        _optionsForm.RestoreWindowLocationCheckBox.Checked = settings.RestoreWindowLocation;
                     }
                     break;
 
@@ -72,7 +72,7 @@ namespace AimpLyrics.Settings
                     if (_optionsForm != null)
                     {
                         settings.OpenWindowOnInitializing = _optionsForm.OpenWindowOnInitCheckBox.Checked;
-                        settings.RestoreWindowHeight = _optionsForm.RestoreWindowHeightCheckBox.Checked;
+                        settings.RestoreWindowLocation = _optionsForm.RestoreWindowLocationCheckBox.Checked;
                     }
                     break;
 
