@@ -1,7 +1,7 @@
 # AimpLyrics
 Lyrics plugin for [AIMP music player](http://www.aimp.ru/).
 
-<img src="https://i.ibb.co/gdSLG1z/Aimp-Lyrics-Plugin.png" alt="Screenshot" border="0"/>
+<img src="https://i.ibb.co/3vp9wXB/Aimp-Lyrics-Plugin.png" alt="Screenshot" border="0"/>
 
 ### Features:
 * display lyrics of current playing song (from file, or tag)
