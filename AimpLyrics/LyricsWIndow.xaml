@@ -109,7 +109,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
-        <Grid MaxHeight="28" DockPanel.Dock="Top">
+        <Grid MaxHeight="26" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>

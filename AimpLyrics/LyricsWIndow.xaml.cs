@@ -76,6 +76,9 @@ namespace AimpLyrics
 
         private bool GetLyricsFromFile()
         {
+            if (_filePath is null || !new Uri(_filePath).IsFile)
+                return false;
+
             string directory = Path.GetDirectoryName(_filePath);
             string filePattern = Path.GetFileNameWithoutExtension(_filePath) + ".*";
             _lyricsFilePath = Directory.EnumerateFiles(directory, filePattern)
