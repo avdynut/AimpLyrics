@@ -30,13 +30,15 @@ namespace AimpLyrics
         private string _artist;
         private string _title;
         private LyricsSource _source;
+        private readonly ILyricsPluginSettings _settings;
 
         private string ArtistTitle => string.IsNullOrEmpty(_artist) && string.IsNullOrEmpty(_title) ?
             "🎵" : $"{_artist} - {_title}";
 
         public LyricsWindow(ILyricsPluginSettings settings)
         {
-            DataContext = new SettingsViewModel(settings);
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            DataContext = new SettingsViewModel(_settings);
 
             InitializeComponent();
         }
@@ -291,6 +293,19 @@ namespace AimpLyrics
         {
             // move window
             SendMessage(new WindowInteropHelper(this).Handle, 0xA1, (IntPtr)0x2, (IntPtr)0);
+        }
+
+        protected override void OnLocationChanged(EventArgs e)
+        {
+            base.OnLocationChanged(e);
+            _settings.WindowLeft = Left;
+            _settings.WindowTop = Top;
+        }
+
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+            _settings.WindowHeight = ActualHeight;
         }
     }
 }

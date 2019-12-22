@@ -144,12 +144,17 @@ namespace AimpLyrics
 
             try
             {
-                if (settings.RestoreWindowHeight)
-                    _lyricsWindow.Height = settings.WindowHeight;
+                if (settings.RestoreWindowLocation)
+                {
+                    _lyricsWindow.Top = settings.WindowTop;
+                    _lyricsWindow.Left = settings.WindowLeft;
+                }
+
+                _lyricsWindow.Height = settings.WindowHeight;
             }
             catch
             {
-                Trace.WriteLine($"Error while setting window height");
+                Trace.WriteLine($"Error while setting double values to window");
             }
         }
 
@@ -203,10 +208,6 @@ namespace AimpLyrics
 
         public void FinalizePlugin()
         {
-            var settings = new AimpLyricsPluginSettings();
-            if (settings?.RestoreWindowHeight == true && _lyricsWindow != null)
-                settings.WindowHeight = _lyricsWindow.ActualHeight;
-
             if (_hook != null)
             {
                 _hook.FileInfoReceived -= _lyricsWindow.UpdateSongInfo;

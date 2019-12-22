@@ -26,8 +26,8 @@ namespace AimpLyrics.Settings
             set => SetString(Convert.ToString(value));
         }
 
-        private readonly bool _defaultRestoreWindowHeight = true;
-        public bool RestoreWindowHeight
+        private readonly bool _defaultRestoreWindowLocation = true;
+        public bool RestoreWindowLocation
         {
             get
             {
@@ -37,11 +37,41 @@ namespace AimpLyrics.Settings
                     return result;
                 else
                 {
-                    RestoreWindowHeight = _defaultRestoreWindowHeight;
-                    return _defaultRestoreWindowHeight;
+                    RestoreWindowLocation = _defaultRestoreWindowLocation;
+                    return _defaultRestoreWindowLocation;
                 }
             }
             set => SetString(Convert.ToString(value));
+        }
+
+        public double WindowTop
+        {
+            get
+            {
+                double top = GetDouble();
+
+                if (top < 0)
+                {
+                    WindowTop = top = 0;
+                }
+                return top;
+            }
+            set => SetDouble(value);
+        }
+
+        public double WindowLeft
+        {
+            get
+            {
+                double left = GetDouble();
+
+                if (left < 0)
+                {
+                    WindowLeft = left = 0;
+                }
+                return left;
+            }
+            set => SetDouble(value);
         }
 
         private readonly double _defaultWindowHeight = 600;
