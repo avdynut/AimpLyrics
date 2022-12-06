@@ -1,6 +1,8 @@
 # AimpLyrics
 Lyrics plugin for [AIMP music player](http://www.aimp.ru/).
 
+Development is suspended. See alternative https://github.com/avdynut/LyricsFinder
+
 <img src="https://i.ibb.co/3vp9wXB/Aimp-Lyrics-Plugin.png" alt="Screenshot" border="0"/>
 
 ### Features:
